@@ -18,7 +18,7 @@ class Image {
 }
 
 const Home: NextPage = () => {
-    const [imageList, setImageList] = useState<Array<Image>>([new Image("https://lh6.googleusercontent.com/qiVwW2ENIaLVzpbgPHYObF_qJlqButdv3E54S3QsX8QTmjx_kYjEz1D0Z0w1sBW--W8bvvPFoZ_YfA=w1282-h1232")])
+    const [imageList, setImageList] = useState<Array<Image>>([new Image("https://images.pexels.com/photos/4221068/pexels-photo-4221068.jpeg?cs=srgb&fm=jpg&w=1280&h=1920")])
 
     const onDrop = useCallback(async (files: File[]) => {
         for (const file of files) {
