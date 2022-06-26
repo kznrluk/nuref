@@ -12,7 +12,7 @@ export const Reference = (
         // eslint-disable-next-line @next/next/no-img-element
         <img
             ref={imageRef}
-            src={image.src}
+            src={image.getSrc()}
             alt={image.alt}
             style={{
                 width: '100%',

@@ -1,19 +1,37 @@
 import type {NextPage} from 'next'
-import React, {useCallback, useState} from "react";
+import React, {useCallback, useMemo, useState} from "react";
 import {v4} from "uuid";
 import {Reference} from "./reference";
 import {ImageRef} from "../libs/ref/image";
+import {imageRefStoreDb} from "../libs/db/db";
+import {useLiveQuery} from "dexie-react-hooks";
 
 const Home: NextPage = () => {
     const [imageList, setImageList] = useState<Array<ImageRef>>([
         new ImageRef("https://images.pexels.com/photos/4221068/pexels-photo-4221068.jpeg?cs=srgb&fm=jpg&w=1280&h=1920", 'default', 'default')
     ])
 
-    const addImage = useCallback((src: string, alt: string) => {
+    const addImage = useCallback(async (src: string, alt: string) => {
         const image = new ImageRef(src, alt, v4());
         // MEMO: 関数でないと即時更新できず複数ファイル追加に対応できない
         setImageList((imageList) => [...imageList, image])
+
+        await image.saveBlob();
+        await imageRefStoreDb.imageRefs.add(image)
+            .catch(e => console.error("cant add image to db: " + e))
     }, [])
+
+
+    const loadedImages = useLiveQuery(
+        () => {
+            try {
+                return imageRefStoreDb.imageRefs.toArray()
+            } catch (e) {
+                console.warn('failed to load items')
+                return [];
+            }
+        }
+    );
 
     const onDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault()
@@ -69,6 +87,7 @@ const Home: NextPage = () => {
     }, [addImage])
 
     const bringToFront = useCallback((uuid: string) => {
+        console.log(loadedImages)
         const find = imageList.find(i => i.uuid === uuid)!
         if (find) {
             setImageList([...imageList.filter((i) => i.uuid !== uuid), find]);
