@@ -1,11 +1,11 @@
-import React, {ReactElement, useEffect, useMemo, useRef} from "react";
+import React, {ReactElement, useEffect, useRef} from "react";
 import {Position, ResizableDelta, Rnd} from "react-rnd";
 import {ImageRef} from "../libs/ref/image";
 import {ResizeDirection} from "re-resizable";
 import {DraggableData, DraggableEvent} from "react-draggable";
 import {updateImageRef} from "../libs/db/imageRefDb";
 
-export const Reference = (
+const Reference = (
     props: { image: ImageRef, bringToFront: (uuid: string) => void }
 ): ReactElement => {
     const image = props.image
@@ -81,4 +81,4 @@ export const Reference = (
     )
 }
 
-
+export default Reference
