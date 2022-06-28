@@ -13,6 +13,10 @@ export class ImageRef {
         this.uuid = id;
     }
 
+    clearObjectURL() {
+        this.objectURL = '';
+    }
+
     updatePosition(x: number | null, y: number | null, width: number | null, height: number | null) {
         this.position = {
             x: x ?? this.position.x,

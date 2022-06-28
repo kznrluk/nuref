@@ -1,9 +1,8 @@
 import type {NextPage} from 'next'
-import React, {useCallback, useState} from "react";
-import {Reference} from "./reference";
+import React, {useCallback, useEffect, useState} from "react";
 import {createImageRefFromUrl, ImageRef} from "../libs/ref/image";
 import {imageRefDb} from "../libs/db/imageRefDb";
-import {useLiveQuery} from "dexie-react-hooks";
+import Reference from "../components/reference";
 
 const Home: NextPage = () => {
     const [imageList, setImageList] = useState<Array<ImageRef>>([
@@ -19,18 +18,18 @@ const Home: NextPage = () => {
             .catch(e => console.error("cant add image to db: " + e))
     }, [])
 
-
-    useLiveQuery(
-        async () => {
-            try {
-                // 重いかも
-                const records = await imageRefDb.imageRefs.toArray();
-                setImageList(records.sort((a, b) => a.positionUpdated - b.positionUpdated));
-            } catch (e) {
-                console.warn('failed to load items')
-            }
+    useEffect(() => {
+        try {
+            // 重いかも
+            imageRefDb.imageRefs.toArray().then(records => {
+                const result = records.sort((a, b) => a.positionUpdated - b.positionUpdated)
+                result.forEach(e => e.clearObjectURL())
+                setImageList(result);
+            });
+        } catch (e) {
+            console.warn('failed to load items')
         }
-    , [addImage]);
+    }, [])
 
     const addImageFromFiles = useCallback((fileList: FileList) => {
         const files: File[] = [];
@@ -133,6 +132,7 @@ const Home: NextPage = () => {
                     if (event.currentTarget.files) {
                         addImageFromFiles(event.currentTarget.files)
                     }
+                    event.currentTarget.value = '';
                 }}
             />
         </>
