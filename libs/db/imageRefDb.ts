@@ -8,9 +8,13 @@ class ImageRefStore extends Dexie {
     constructor() {
         super(DB_NAME);
         this.version(1).stores({
-            imageRefs: '++id'
+            imageRefs: '&uuid'
         })
+        this.imageRefs.mapToClass(ImageRef);
     }
 }
 
-export const imageRefStoreDb = new ImageRefStore()
+export const imageRefDb = new ImageRefStore();
+export const updateImageRef = (imageRef: ImageRef) => {
+    imageRefDb.imageRefs.put(imageRef);
+}

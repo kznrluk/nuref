@@ -1,6 +1,9 @@
-import React, {ReactElement, useEffect, useRef} from "react";
-import {Rnd} from "react-rnd";
+import React, {ReactElement, useEffect, useMemo, useRef} from "react";
+import {Position, ResizableDelta, Rnd} from "react-rnd";
 import {ImageRef} from "../libs/ref/image";
+import {ResizeDirection} from "re-resizable";
+import {DraggableData, DraggableEvent} from "react-draggable";
+import {updateImageRef} from "../libs/db/imageRefDb";
 
 export const Reference = (
     props: { image: ImageRef, bringToFront: (uuid: string) => void }
@@ -13,7 +16,7 @@ export const Reference = (
         <img
             ref={imageRef}
             src={image.getSrc()}
-            alt={image.alt}
+            alt=""
             style={{
                 width: '100%',
                 height: '100%',
@@ -32,10 +35,10 @@ export const Reference = (
                 rndRef = c;
             }}
             default={{
-                x: 150,
-                y: 205,
-                width: 1280 / 3,
-                height: 1920 / 3,
+                x: image.position.x,
+                y: image.position.y,
+                width: image.position.width,
+                height: image.position.height,
             }}
             minWidth={30}
             minHeight={30}
@@ -45,22 +48,33 @@ export const Reference = (
             style={{
                 backgroundColor: '#FAFAFA'
             }}
+            onResizeStop={(e: MouseEvent | TouchEvent, dir: ResizeDirection, elementRef: HTMLElement, delta: ResizableDelta, position: Position) => {
+                image.updatePosition(position.x, position.y, elementRef.clientWidth, elementRef.clientHeight)
+                updateImageRef(image)
+            }}
+            onDragStop={(e: DraggableEvent, data: DraggableData) => {
+                image.updatePosition(data.x, data.y, null, null)
+                updateImageRef(image)
+            }}
         >
             {imageElement}
         </Rnd>
     )
 
     useEffect(() => {
-        imageRef.current?.addEventListener('load', (event) => {
-            const img = event.currentTarget as HTMLImageElement;
-            if (img) {
-                const ratio = img.naturalWidth / img.naturalHeight;
-                const width = 500 * ratio;
-                const height = 500;
-                rndRef?.updateSize({width, height})
-            }
-        })
-    }, [rndRef, imageRef])
+        if (image.positionUpdated === 0) {
+            imageRef.current?.addEventListener('load', (event) => {
+                const img = event.currentTarget as HTMLImageElement;
+                if (img) {
+                    const ratio = img.naturalWidth / img.naturalHeight;
+                    const width = 500 * ratio;
+                    const height = 500;
+                    image.updatePosition(null,null, width, height);
+                    rndRef?.updateSize({width, height})
+                }
+            })
+        }
+    }, [rndRef, imageRef, image])
 
     return (
         rnd

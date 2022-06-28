@@ -1,25 +1,40 @@
+import {v4} from "uuid";
+
 export class ImageRef {
     public uuid: string;
-    public readonly src: string
-    public readonly alt: string
-    public blobString?: string
+    public blob: Blob;
+    public position = { x: 10, y: 10, width: 250, height: 250 }
+    public positionUpdated: number = 0
 
-    constructor(src: string, alt: string = "hi", id: string) {
-        this.src = src;
-        this.alt = alt;
+    private objectURL: string | undefined;
+
+    constructor(blob: Blob, id: string) {
+        this.blob = blob;
         this.uuid = id;
     }
 
-    async saveBlob() {
-        const file = await fetch(this.src).then(r => r.blob())
-        this.blobString = await file.text()
+    updatePosition(x: number | null, y: number | null, width: number | null, height: number | null) {
+        this.position = {
+            x: x ?? this.position.x,
+            y: y ?? this.position.y,
+            width: width ?? this.position.width,
+            height: height ?? this.position.height,
+        }
+
+        this.positionUpdated = Date.now()
     }
 
     getSrc() {
-        if (!this.blobString) {
-            this.saveBlob();
-            return this.src;
+        if (this.objectURL) {
+            return this.objectURL;
         }
-        return this.src;
+
+        this.objectURL = URL.createObjectURL(this.blob);
+        return this.objectURL;
     }
+}
+
+export const createImageRefFromUrl = async (src: string) => {
+    const blob = await fetch(src).then(r => r.blob())
+    return new ImageRef(blob, v4());
 }

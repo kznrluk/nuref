@@ -1,43 +1,39 @@
 import type {NextPage} from 'next'
-import React, {useCallback, useMemo, useState} from "react";
-import {v4} from "uuid";
+import React, {useCallback, useState} from "react";
 import {Reference} from "./reference";
-import {ImageRef} from "../libs/ref/image";
-import {imageRefStoreDb} from "../libs/db/db";
+import {createImageRefFromUrl, ImageRef} from "../libs/ref/image";
+import {imageRefDb} from "../libs/db/imageRefDb";
 import {useLiveQuery} from "dexie-react-hooks";
 
 const Home: NextPage = () => {
     const [imageList, setImageList] = useState<Array<ImageRef>>([
-        new ImageRef("https://images.pexels.com/photos/4221068/pexels-photo-4221068.jpeg?cs=srgb&fm=jpg&w=1280&h=1920", 'default', 'default')
+        // new ImageRef("https://images.pexels.com/photos/4221068/pexels-photo-4221068.jpeg?cs=srgb&fm=jpg&w=1280&h=1920", 'default', 'default')
     ])
 
     const addImage = useCallback(async (src: string, alt: string) => {
-        const image = new ImageRef(src, alt, v4());
+        const image = await createImageRefFromUrl(src);
         // MEMO: 関数でないと即時更新できず複数ファイル追加に対応できない
         setImageList((imageList) => [...imageList, image])
 
-        await image.saveBlob();
-        await imageRefStoreDb.imageRefs.add(image)
+        await imageRefDb.imageRefs.add(image)
             .catch(e => console.error("cant add image to db: " + e))
     }, [])
 
 
-    const loadedImages = useLiveQuery(
-        () => {
+    useLiveQuery(
+        async () => {
             try {
-                return imageRefStoreDb.imageRefs.toArray()
+                // 重いかも
+                const records = await imageRefDb.imageRefs.toArray();
+                setImageList(records.sort((a, b) => a.positionUpdated - b.positionUpdated));
             } catch (e) {
                 console.warn('failed to load items')
-                return [];
             }
         }
-    );
+    , [addImage]);
 
-    const onDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-        event.preventDefault()
-        const fileList = event.dataTransfer.files;
+    const addImageFromFiles = useCallback((fileList: FileList) => {
         const files: File[] = [];
-
         for (let i = 0; i < fileList.length; i++) {
             // 😇😇😇
             const f = fileList.item(i);
@@ -54,7 +50,12 @@ const Home: NextPage = () => {
                 addImage("", "Non supported file: " + file.type)
             }
         }
-    }, [addImage]);
+    }, [addImage])
+
+    const onDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault()
+        addImageFromFiles(event.dataTransfer.files);
+    }, [addImageFromFiles]);
 
     const onPaste = useCallback((event: React.ClipboardEvent<HTMLDivElement>) => {
         if (!event.clipboardData
@@ -87,7 +88,6 @@ const Home: NextPage = () => {
     }, [addImage])
 
     const bringToFront = useCallback((uuid: string) => {
-        console.log(loadedImages)
         const find = imageList.find(i => i.uuid === uuid)!
         if (find) {
             setImageList([...imageList.filter((i) => i.uuid !== uuid), find]);
@@ -118,6 +118,23 @@ const Home: NextPage = () => {
             </div>
 
             {imageElementList}
+
+            <input
+                type="file"
+                accept="image/*"
+                style={{
+                    position: 'absolute',
+                    top: '10px',
+                    left: '10px',
+                    fontSize: '16px'
+                }}
+                onChange={(event) => {
+                    event.preventDefault();
+                    if (event.currentTarget.files) {
+                        addImageFromFiles(event.currentTarget.files)
+                    }
+                }}
+            />
         </>
     )
 }
