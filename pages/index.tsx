@@ -1,13 +1,16 @@
 import type {NextPage} from 'next'
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {createImageRefFromUrl, ImageRef} from "../libs/ref/image";
-import {imageRefDb} from "../libs/db/imageRefDb";
+import {deleteImageRef, imageRefDb} from "../libs/db/imageRefDb";
 import Reference from "../components/reference";
 
 const Home: NextPage = () => {
     const [imageList, setImageList] = useState<Array<ImageRef>>([
         // new ImageRef("https://images.pexels.com/photos/4221068/pexels-photo-4221068.jpeg?cs=srgb&fm=jpg&w=1280&h=1920", 'default', 'default')
     ])
+    const [focusedUUID, setFocusedUUID] = useState<string|null>(null);
+
+    useMemo(() => console.log(focusedUUID), [focusedUUID])
 
     const addImage = useCallback(async (src: string, alt: string) => {
         const image = await createImageRefFromUrl(src);
@@ -17,6 +20,15 @@ const Home: NextPage = () => {
         await imageRefDb.imageRefs.add(image)
             .catch(e => console.error("cant add image to db: " + e))
     }, [])
+
+    const deleteFocusedImage = useCallback(() => {
+        const target = imageList.find(({uuid}) => uuid === focusedUUID);
+        if (!target || focusedUUID === '') {
+            return false;
+        }
+        deleteImageRef(target);
+        setImageList(imageList.filter(e => e.uuid !== target.uuid));
+    }, [imageList, focusedUUID]);
 
     useEffect(() => {
         try {
@@ -30,6 +42,15 @@ const Home: NextPage = () => {
             console.warn('failed to load items')
         }
     }, [])
+
+    useEffect(() => {
+        document.onkeydown = (ev) => {
+            const code = ev.code;
+            if (code === 'Delete') {
+                deleteFocusedImage();
+            }
+        };
+    }, [deleteFocusedImage])
 
     const addImageFromFiles = useCallback((fileList: FileList) => {
         const files: File[] = [];
@@ -95,7 +116,7 @@ const Home: NextPage = () => {
 
     const imageElementList = imageList.map((image) => {
         return (
-            <Reference image={image} key={image.uuid} bringToFront={bringToFront}/>
+            <Reference focused={() => setFocusedUUID(image.uuid)} isFocused={focusedUUID === image.uuid} image={image} key={image.uuid} bringToFront={bringToFront}/>
         );
     })
 
@@ -113,6 +134,7 @@ const Home: NextPage = () => {
                 onPaste={(e) => onPaste(e)}
                 onInput={(e) => onInput(e)}
                 onDrop={(e) => onDrop(e)}
+                onMouseDown={() => setFocusedUUID('')}
             >
             </div>
 

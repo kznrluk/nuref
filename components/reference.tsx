@@ -6,7 +6,7 @@ import {DraggableData, DraggableEvent} from "react-draggable";
 import {updateImageRef} from "../libs/db/imageRefDb";
 
 const Reference = (
-    props: { image: ImageRef, bringToFront: (uuid: string) => void }
+    props: { image: ImageRef, bringToFront: (uuid: string) => void, isFocused: boolean, focused: () => void }
 ): ReactElement => {
     const image = props.image
     const imageRef = useRef<HTMLImageElement>(null);
@@ -46,12 +46,14 @@ const Reference = (
                 props.bringToFront(image.uuid);
             }}
             style={{
-                backgroundColor: '#FAFAFA'
+                backgroundColor: '#FAFAFA',
+                boxShadow: props.isFocused ? '0 0 16px 4px rgba(0, 0, 0, 0.5)' : '0 0 16px 4px rgba(0, 0, 0, 0.25)',
             }}
             onResizeStop={(e: MouseEvent | TouchEvent, dir: ResizeDirection, elementRef: HTMLElement, delta: ResizableDelta, position: Position) => {
                 image.updatePosition(position.x, position.y, elementRef.clientWidth, elementRef.clientHeight)
                 updateImageRef(image)
             }}
+            onMouseDown={props.focused}
             onDragStop={(e: DraggableEvent, data: DraggableData) => {
                 image.updatePosition(data.x, data.y, null, null)
                 updateImageRef(image)
