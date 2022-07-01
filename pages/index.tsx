@@ -3,12 +3,16 @@ import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {createImageRefFromUrl, ImageRef} from "../libs/ref/image";
 import {deleteImageRef, imageRefDb} from "../libs/db/imageRefDb";
 import Reference from "../components/reference";
+import {BsFolderPlus, BsGithub, BsPatchQuestionFill} from "react-icons/bs";
+import Help from "../components/help";
 
 const Home: NextPage = () => {
     const [imageList, setImageList] = useState<Array<ImageRef>>([
         // new ImageRef("https://images.pexels.com/photos/4221068/pexels-photo-4221068.jpeg?cs=srgb&fm=jpg&w=1280&h=1920", 'default', 'default')
     ])
-    const [focusedUUID, setFocusedUUID] = useState<string|null>(null);
+    const [focusedUUID, setFocusedUUID] = useState<string | null>(null);
+    const [emojiIndex, setEmojiIndex] = useState<number>(0);
+    const [showHelp, setShowHelp] = useState<boolean>(false);
 
     useMemo(() => console.log(focusedUUID), [focusedUUID])
 
@@ -51,6 +55,10 @@ const Home: NextPage = () => {
             }
         };
     }, [deleteFocusedImage])
+
+    useEffect(() => {
+        setEmojiIndex(Math.floor(Math.random() * 4));
+    }, [])
 
     const addImageFromFiles = useCallback((fileList: FileList) => {
         const files: File[] = [];
@@ -116,12 +124,14 @@ const Home: NextPage = () => {
 
     const imageElementList = imageList.map((image) => {
         return (
-            <Reference focused={() => setFocusedUUID(image.uuid)} isFocused={focusedUUID === image.uuid} image={image} key={image.uuid} bringToFront={bringToFront}/>
+            <Reference focused={() => setFocusedUUID(image.uuid)} isFocused={focusedUUID === image.uuid} image={image}
+                       key={image.uuid} bringToFront={bringToFront}/>
         );
     })
 
     return (
         <>
+            {showHelp ? <Help/> : false}
             <div
                 contentEditable={true}
                 style={{
@@ -130,6 +140,7 @@ const Home: NextPage = () => {
                     margin: 0,
                     width: '100%',
                     height: '100%',
+                    cursor: 'default',
                 }}
                 onPaste={(e) => onPaste(e)}
                 onInput={(e) => onInput(e)}
@@ -141,13 +152,15 @@ const Home: NextPage = () => {
             {imageElementList}
 
             <input
+                id="selectFiles"
                 type="file"
                 accept="image/*"
                 style={{
                     position: 'absolute',
                     top: '10px',
                     left: '10px',
-                    fontSize: '16px'
+                    fontSize: '16px',
+                    display: 'none',
                 }}
                 onChange={(event) => {
                     event.preventDefault();
@@ -157,6 +170,77 @@ const Home: NextPage = () => {
                     event.currentTarget.value = '';
                 }}
             />
+
+            <div
+                style={{
+                    position: 'absolute',
+                    top: '12px',
+                    left: '12px',
+                    padding: '10px',
+
+                    borderRadius: '3px',
+
+                    width: 'auto',
+                    height: '40px',
+                    backgroundColor: '#e8eaec',
+                    boxShadow: '0 0 16px 4px rgba(0, 0, 0, 0.25)',
+
+                    color: "#1d1f22",
+
+                    display: 'flex',
+                    alignItems: 'center',
+                }}
+            >
+                <div>
+                    <p
+                        style={{
+                            fontSize: '16px',
+                            paddingRight: '8px',
+                        }}
+                    >Power Refs {['🖼️', '🎨', '🧑‍🎨', '🖌️'][emojiIndex]}</p>
+                </div>
+                <div
+                    style={{
+                        fontSize: '24px',
+                        display: 'grid',
+                        placeItems: 'center',
+                        paddingLeft: '12px',
+                        cursor: 'pointer',
+                        paddingTop: '3px',
+                    }}
+                >
+                    <BsFolderPlus
+                        onClick={() => {
+                            document.getElementById('selectFiles')!.click();
+                        }}
+                    />
+                </div>
+                <div
+                    style={{
+                        fontSize: '24px',
+                        display: 'grid',
+                        placeItems: 'center',
+                        paddingLeft: '12px',
+                        paddingTop: '3px',
+                    }}
+                >
+                    <a href="https://github.com/kznrluk/power-refs" target="_blank" rel="noreferrer"><BsGithub/></a>
+                </div>
+                <div
+                    style={{
+                        fontSize: '24px',
+                        display: 'grid',
+                        placeItems: 'center',
+                        paddingLeft: '12px',
+                        paddingTop: '0px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    <BsPatchQuestionFill
+                        onClick={() => setShowHelp(!showHelp)}
+                    />
+                </div>
+            </div>
         </>
     )
 }

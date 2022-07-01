@@ -1,6 +1,6 @@
 {
   "name": "power-refs",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -15,6 +15,7 @@
     "next": "12.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.4.0",
     "react-rnd": "^10.3.7",
     "uuid": "^8.3.2"
   },

@@ -3,7 +3,7 @@ import {v4} from "uuid";
 export class ImageRef {
     public uuid: string;
     public blob: Blob;
-    public position = { x: 10, y: 10, width: 250, height: 250 }
+    public position = {x: 100, y: 100, width: 250, height: 250}
     public positionUpdated: number = 0
 
     private objectURL: string | undefined;
