@@ -10,10 +10,8 @@ const Help = (): ReactElement => {
                 left: '12px',
                 width: '512px',
                 height: '200px',
-
-                backgroundColor: '#FAFAFA00',
                 borderRadius: '3px',
-                border: 'dashed ',
+                border: 'dashed',
                 padding: '16px',
                 color: '#e8eaec'
             }}

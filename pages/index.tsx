@@ -3,7 +3,7 @@ import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {createImageRefFromUrl, ImageRef} from "../libs/ref/image";
 import {deleteImageRef, imageRefDb} from "../libs/db/imageRefDb";
 import Reference from "../components/reference";
-import {BsFolderPlus, BsGithub, BsPatchQuestionFill} from "react-icons/bs";
+import {BsFolderPlus, BsGithub, BsPatchQuestionFill, BsShift, BsShiftFill} from "react-icons/bs";
 import Help from "../components/help";
 
 const Home: NextPage = () => {
@@ -13,6 +13,7 @@ const Home: NextPage = () => {
     const [focusedUUID, setFocusedUUID] = useState<string | null>(null);
     const [emojiIndex, setEmojiIndex] = useState<number>(0);
     const [showHelp, setShowHelp] = useState<boolean>(false);
+    const [isAltMode, setIsAltMode] = useState<boolean>(false);
 
     useMemo(() => console.log(focusedUUID), [focusedUUID])
 
@@ -53,8 +54,18 @@ const Home: NextPage = () => {
             if (code === 'Delete') {
                 deleteFocusedImage();
             }
+            if (code === 'ShiftLeft' && !isAltMode) {
+                setIsAltMode(true)
+            }
         };
-    }, [deleteFocusedImage])
+
+        document.onkeyup = (ev) => {
+            const code = ev.code;
+            if (code === 'ShiftLeft') {
+                setIsAltMode(false)
+            }
+        }
+    }, [isAltMode, deleteFocusedImage])
 
     useEffect(() => {
         setEmojiIndex(Math.floor(Math.random() * 4));
@@ -124,8 +135,15 @@ const Home: NextPage = () => {
 
     const imageElementList = imageList.map((image) => {
         return (
-            <Reference focused={() => setFocusedUUID(image.uuid)} isFocused={focusedUUID === image.uuid} image={image}
-                       key={image.uuid} bringToFront={bringToFront}/>
+            <Reference
+                focused={() => {
+                    bringToFront(image.uuid);
+                    setFocusedUUID(image.uuid);
+                }}
+                isFocused={focusedUUID === image.uuid} image={image}
+                key={image.uuid}
+                opt={{isAltMode: isAltMode}}
+            />
         );
     })
 
@@ -150,6 +168,7 @@ const Home: NextPage = () => {
             </div>
 
             {imageElementList}
+
 
             <input
                 id="selectFiles"
@@ -221,10 +240,12 @@ const Home: NextPage = () => {
                         display: 'grid',
                         placeItems: 'center',
                         paddingLeft: '12px',
+                        cursor: 'pointer',
                         paddingTop: '3px',
                     }}
+                    onClick={() => setIsAltMode(!isAltMode)}
                 >
-                    <a href="https://github.com/kznrluk/power-refs" target="_blank" rel="noreferrer"><BsGithub/></a>
+                    {isAltMode ? <BsShiftFill/> : <BsShift/>}
                 </div>
                 <div
                     style={{
@@ -232,13 +253,24 @@ const Home: NextPage = () => {
                         display: 'grid',
                         placeItems: 'center',
                         paddingLeft: '12px',
-                        paddingTop: '0px',
+                        paddingTop: '3px',
                         cursor: 'pointer',
                     }}
                 >
                     <BsPatchQuestionFill
                         onClick={() => setShowHelp(!showHelp)}
                     />
+                </div>
+                <div
+                    style={{
+                        fontSize: '24px',
+                        display: 'grid',
+                        placeItems: 'center',
+                        paddingLeft: '12px',
+                        paddingTop: '3px',
+                    }}
+                >
+                    <a href="https://github.com/kznrluk/power-refs" target="_blank" rel="noreferrer"><BsGithub/></a>
                 </div>
             </div>
         </>
