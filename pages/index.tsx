@@ -214,7 +214,7 @@ const Home: NextPage = () => {
                             fontSize: '16px',
                             paddingRight: '8px',
                         }}
-                    >Power Refs {['🖼️', '🎨', '🧑‍🎨', '🖌️'][emojiIndex]}</p>
+                    >PowerRefs {['🖼️', '🎨', '🧑‍🎨', '🖌️'][emojiIndex]}</p>
                 </div>
                 <div
                     style={{
