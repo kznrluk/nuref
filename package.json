@@ -1,6 +1,6 @@
 {
   "name": "power-refs",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -18,7 +18,6 @@
     "react-icons": "^4.4.0",
     "react-image-crop": "^10.0.4",
     "react-moveable": "^0.33.0",
-    "react-rnd": "^10.3.7",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
