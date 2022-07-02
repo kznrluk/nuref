@@ -1,5 +1,5 @@
 import type {NextPage} from 'next'
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {createImageRefFromUrl, ImageRef} from "../libs/ref/image";
 import {deleteImageRef, imageRefDb} from "../libs/db/imageRefDb";
 import Reference from "../components/reference";
@@ -7,15 +7,11 @@ import {BsFolderPlus, BsGithub, BsPatchQuestionFill, BsShift, BsShiftFill} from 
 import Help from "../components/help";
 
 const Home: NextPage = () => {
-    const [imageList, setImageList] = useState<Array<ImageRef>>([
-        // new ImageRef("https://images.pexels.com/photos/4221068/pexels-photo-4221068.jpeg?cs=srgb&fm=jpg&w=1280&h=1920", 'default', 'default')
-    ])
+    const [imageList, setImageList] = useState<Array<ImageRef>>([])
     const [focusedUUID, setFocusedUUID] = useState<string | null>(null);
     const [emojiIndex, setEmojiIndex] = useState<number>(0);
     const [showHelp, setShowHelp] = useState<boolean>(false);
     const [isAltMode, setIsAltMode] = useState<boolean>(false);
-
-    useMemo(() => console.log(focusedUUID), [focusedUUID])
 
     const addImage = useCallback(async (src: string, alt: string) => {
         const image = await createImageRefFromUrl(src);
@@ -141,6 +137,8 @@ const Home: NextPage = () => {
                     setFocusedUUID(image.uuid);
                 }}
                 isFocused={focusedUUID === image.uuid} image={image}
+                removeFocus={() => setFocusedUUID('')}
+                removeMySelf={() => deleteFocusedImage()}
                 key={image.uuid}
                 opt={{isAltMode: isAltMode}}
             />

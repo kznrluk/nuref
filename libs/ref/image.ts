@@ -5,6 +5,9 @@ export class ImageRef {
     public blob: Blob;
     public position = {x: 100, y: 100, width: 250, height: 250, rotate: 0}
     public positionUpdated: number = 0
+    public isFlipped: boolean = false;
+    public croppedImageBlob: Blob | null = null;
+    public croppedImageObjectURL: string | undefined;
 
     private objectURL: string | undefined;
 
@@ -15,6 +18,7 @@ export class ImageRef {
 
     clearObjectURL() {
         this.objectURL = '';
+        this.croppedImageObjectURL = '';
     }
 
     updatePosition(x: number | null, y: number | null, width: number | null, height: number | null, rotate: number | null) {
@@ -29,13 +33,30 @@ export class ImageRef {
         this.positionUpdated = Date.now()
     }
 
-    getSrc() {
+    setCroppedBlob(blob: Blob) {
+        this.croppedImageBlob = blob;
+        this.croppedImageObjectURL = URL.createObjectURL(this.croppedImageBlob);
+    }
+
+    getOriginalSrc() {
         if (this.objectURL) {
             return this.objectURL;
         }
 
         this.objectURL = URL.createObjectURL(this.blob);
         return this.objectURL;
+    }
+
+    getSrc() {
+        if (this.croppedImageBlob) {
+            if (this.croppedImageObjectURL) {
+                return this.croppedImageObjectURL;
+            }
+            this.croppedImageObjectURL = URL.createObjectURL(this.croppedImageBlob);
+            return this.croppedImageObjectURL;
+        }
+
+        return this.getOriginalSrc();
     }
 }
 
