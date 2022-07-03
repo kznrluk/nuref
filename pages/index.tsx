@@ -3,14 +3,13 @@ import React, {useCallback, useEffect, useState} from "react";
 import {createImageRefFromUrl, ImageRef} from "../libs/ref/image";
 import {deleteImageRef, imageRefDb} from "../libs/db/imageRefDb";
 import Reference from "../components/reference";
-import {BsFolderPlus, BsGithub, BsPatchQuestionFill, BsShift, BsShiftFill} from "react-icons/bs";
-import Help from "../components/help";
+import {BsFolderPlus, BsGithub, BsShift, BsShiftFill} from "react-icons/bs";
 
 const Home: NextPage = () => {
     const [imageList, setImageList] = useState<Array<ImageRef>>([])
     const [focusedUUID, setFocusedUUID] = useState<string | null>(null);
     const [emojiIndex, setEmojiIndex] = useState<number>(0);
-    const [showHelp, setShowHelp] = useState<boolean>(false);
+    // const [showHelp, setShowHelp] = useState<boolean>(false);
     const [isAltMode, setIsAltMode] = useState<boolean>(false);
 
     const addImage = useCallback(async (src: string, alt: string) => {
@@ -147,7 +146,6 @@ const Home: NextPage = () => {
 
     return (
         <>
-            {showHelp ? <Help/> : false}
             <div
                 contentEditable={true}
                 style={{
@@ -244,20 +242,6 @@ const Home: NextPage = () => {
                     onClick={() => setIsAltMode(!isAltMode)}
                 >
                     {isAltMode ? <BsShiftFill/> : <BsShift/>}
-                </div>
-                <div
-                    style={{
-                        fontSize: '24px',
-                        display: 'grid',
-                        placeItems: 'center',
-                        paddingLeft: '12px',
-                        paddingTop: '3px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    <BsPatchQuestionFill
-                        onClick={() => setShowHelp(!showHelp)}
-                    />
                 </div>
                 <div
                     style={{
