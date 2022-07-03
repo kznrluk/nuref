@@ -7,7 +7,7 @@ import {OnResizeEnd, OnRotateEnd} from "react-moveable/types";
 import ReactCrop, {Crop, PixelCrop} from "react-image-crop";
 import 'react-image-crop/dist/ReactCrop.css'
 import {createCanvas} from "./createCanvas";
-import {BiCrop, BiTrash} from "react-icons/bi";
+import {BiCrop, BiMinusFront, BiTrash} from "react-icons/bi";
 import {CgEditFlipH} from "react-icons/cg";
 
 export interface OptionMap {
@@ -27,6 +27,7 @@ const Reference = (
     const cropImageRef = useRef<HTMLImageElement>(null)
     const viewImageRef = useRef<HTMLImageElement>(null)
     const [referenceSize, setReferenceSize] = useState<number[]>([image.position.width, image.position.height])
+    const [isPopupMode, setIsPopupMode] = useState<Window|null>(null);
 
     const isFocused = props.isFocused;
     const isAltMode = props.opt.isAltMode
@@ -35,6 +36,18 @@ const Reference = (
         image.isFlipped = isFlipped;
         updateImageRef(image)
     }, [image, isFlipped])
+
+    useEffect(() => {
+        if (isPopupMode) {
+            const timer = setInterval(() => {
+                if (isPopupMode.closed) {
+                    clearInterval(timer);
+                    setIsPopupMode(null)
+                    props.focused();
+                }
+            }, 150);
+        }
+    }, [isPopupMode])
 
     const imageElement = (
         <div
@@ -54,6 +67,7 @@ const Reference = (
                 backgroundColor: '#FFFFFF',
                 backgroundSize: '32px 32px',
                 backgroundPosition: '0 0, 16px 16px',
+                display: isPopupMode !== null ? 'none' : 'flex',
             }}
             onMouseDown={() => props.focused()}
         >
@@ -106,6 +120,26 @@ const Reference = (
                         onClick={() => setIsFlipped(!isFlipped)}
                     >
                     </CgEditFlipH>
+                </div>
+
+                <div>
+                    <BiMinusFront
+                        style={{
+                            fontSize: '32px',
+                            paddingTop: '3px',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => {
+                            const d = window.open('' +
+                                `/popup?uuid=${image.uuid}`,
+                                '_blank',
+                                `popup=1,width=${referenceSize[0] * 1.3},height=${referenceSize[1] * 1.3}`
+                            );
+                            props.removeFocus();
+                            setIsPopupMode(d)
+                        }}
+                    >
+                    </BiMinusFront>
                 </div>
                 <div>
                     <BiTrash
