@@ -202,40 +202,51 @@ const Reference = (
                         transform: 'translate(-50%, -50%)',
                         backgroundColor: '#e8eaec',
                         boxShadow: '0 0 16px 4px rgba(0, 0, 0, 0.25)',
-                        maxHeight: '80vh',
-                        maxWidth: '80vw',
-                        padding: '25px',
+                        maxHeight: '850px',
+                        width: '650px',
+                        padding: '15px',
                         borderRadius: '3px',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
+                        zIndex: '10',
                     }}
                 >
-                    <ReactCrop
-                        disabled={!isEditMode}
-                        crop={crop}
-                        onChange={(pixelCrop) => setCrop(pixelCrop)}
-                        onComplete={(c) => setCompletedCrop(c)}
+                    <div
                         style={{
-                            maxWidth: '100%',
-                            maxHeight: '100%',
-                            background: 'linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%), linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%)',
-                            backgroundColor: '#FFFFFF',
-                            backgroundSize: '32px 32px',
-                            backgroundPosition: '0 0, 16px 16px',
+                            padding: '16px',
+                            backgroundColor: '#1d1f22',
+                            overflow: 'scroll'
                         }}
                     >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            ref={cropImageRef}
-                            src={image.getOriginalSrc()}
+                        <ReactCrop
+                            disabled={!isEditMode}
+                            crop={crop}
+                            onChange={(pixelCrop) => setCrop(pixelCrop)}
+                            onComplete={(c) => setCompletedCrop(c)}
                             style={{
-                                width: `100%`,
-                                height: `100%`,
+                                maxWidth: '100%',
+                                maxHeight: '100%',
+                                overflow: 'visible'
                             }}
-                            alt=""
-                        />
-                    </ReactCrop>
+                        >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                ref={cropImageRef}
+                                src={image.getOriginalSrc()}
+                                style={{
+                                    background: 'linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%), linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%)',
+                                    backgroundColor: '#FFFFFF',
+                                    backgroundSize: '32px 32px',
+                                    backgroundPosition: '0 0, 16px 16px',
+
+                                    width: `100%`,
+                                    height: `100%`,
+                                }}
+                                alt=""
+                            />
+                        </ReactCrop>
+                    </div>
                     <button
                         style={{
                             marginTop: '16px',
