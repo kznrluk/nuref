@@ -53,8 +53,8 @@ const Popup: NextPage = () => {
                         style={{
                             objectFit: 'cover',
                             transform: image.isFlipped ? 'scaleX(-1)' : '',
-                            maxWidth: '100%',
-                            maxHeight: '100%'
+                            width: '100%',
+                            height: '100%'
                         }}
                      alt=""
                     />
