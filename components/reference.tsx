@@ -48,7 +48,12 @@ const Reference = (
                 height: referenceSize[1],
                 transform: `rotate(${image.position.rotate}deg)`,
                 boxShadow: props.isFocused ? '0 0 16px 4px rgba(0, 0, 0, 0.5)' : '0 0 16px 4px rgba(0, 0, 0, 0.25)',
-                overflow: 'visible'
+                overflow: 'visible',
+
+                background: 'linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%), linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%)',
+                backgroundColor: '#FFFFFF',
+                backgroundSize: '32px 32px',
+                backgroundPosition: '0 0, 16px 16px',
             }}
             onMouseDown={() => props.focused()}
         >
@@ -179,7 +184,11 @@ const Reference = (
                         onComplete={(c) => setCompletedCrop(c)}
                         style={{
                             maxWidth: '100%',
-                            maxHeight: '100%'
+                            maxHeight: '100%',
+                            background: 'linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%), linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%)',
+                            backgroundColor: '#FFFFFF',
+                            backgroundSize: '32px 32px',
+                            backgroundPosition: '0 0, 16px 16px',
                         }}
                     >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
