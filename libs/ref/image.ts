@@ -8,6 +8,7 @@ export class ImageRef {
     public isFlipped: boolean = false;
     public croppedImageBlob: Blob | null = null;
     public croppedImageObjectURL: string | undefined;
+    public workSpaces: string[] = [];
 
     private objectURL: string | undefined;
 
@@ -60,7 +61,9 @@ export class ImageRef {
     }
 }
 
-export const createImageRefFromUrl = async (src: string) => {
+export const createImageRefFromUrl = async (src: string, workSpaceID: string) => {
     const blob = await fetch(src).then(r => r.blob())
-    return new ImageRef(blob, v4());
+    const imageRef = new ImageRef(blob, v4());
+    imageRef.workSpaces = [workSpaceID];
+    return imageRef;
 }

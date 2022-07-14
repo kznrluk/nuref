@@ -57,7 +57,7 @@ const Reference = (
                 position: props.isImageViewMode ? 'static' : 'absolute',
                 top: image.position.x!,
                 left: image.position.y!,
-                width: props.isImageViewMode ? '15%' : referenceSize[0],
+                width: props.isImageViewMode ? '20%' : referenceSize[0],
                 height: props.isImageViewMode ? 'unset' : referenceSize[1],
                 transform: props.isImageViewMode ? 'unset' : `rotate(${image.position.rotate}deg)`,
                 boxShadow: props.isFocused ? '0 0 16px 4px rgba(0, 0, 0, 0.5)' : '0 0 16px 4px rgba(0, 0, 0, 0.25)',
@@ -81,6 +81,7 @@ const Reference = (
                     width: `100%`,
                     height: `100%`,
                     transform: isFlipped ? 'scaleX(-1)' : '',
+                    maxHeight: props.isImageViewMode ? '512px' : 'unset',
                 }}
                 onDragStart={(e) => e.preventDefault()}
                 alt=""
