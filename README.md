@@ -1,15 +1,6 @@
-# Power Refs
-クリエイター向け参考資料ビューア。
+![EyeCatch](https://github.com/kznrluk/nuref/blob/main/docs/eyecatch.png?raw=true)
 
-**PCを再起動しても、参考資料はそのまま。PC内の画像も、SNSの画像も簡単インポート。**
-
-![Preview](https://github.com/kznrluk/power-refs/blob/main/docs/img.png?raw=true)
-
-- ブラウザを再起動しても画像の配置を維持。
-- 画像はブラウザ内に保存。アップロードなしで安心。
-- 直観的な操作で使いやすい。
-
-[試してみる](https://power-refs.anyfrog.net)
+[試してみる](https://nuref.app)
 
 ## Roadmap
 
@@ -18,9 +9,11 @@
 - [x] クリップボードからのペースト対応
 - [x] WebページからのD&D対応
 - [ ] 画像メタデータ表示
-- [ ] 画像回転・トリミング
-- [ ] ワークスペース切り替え
+- [x] 画像回転・トリミング
+- [x] ワークスペース切り替え
 - [ ] URL貼り付け
 - [ ] 永続化した画像のエクスポート
 - [ ] オフラインソフトウェア化
 - [ ] ユーザビリティ向上
+- [ ] ソースコード整理
+- [ ] ランディングページ整備

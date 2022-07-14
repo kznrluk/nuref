@@ -28,7 +28,7 @@ const Help = (): ReactElement => {
                 </div>
                 <div style={{paddingTop: '24px', textAlign: 'center'}}>
                     <a style={{margin: 0, padding: 0, width: '100%', fontWeight: 'lighter'}}
-                       href="https://github.com/kznrluk/power-refs">
+                       href="https://github.com/kznrluk/nuref">
                         Support the project by clicking on the Star on GitHub🌟
                     </a>
                 </div>
