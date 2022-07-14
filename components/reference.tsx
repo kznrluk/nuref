@@ -15,7 +15,7 @@ export interface OptionMap {
 }
 
 const Reference = (
-    props: { image: ImageRef, isFocused: boolean, removeFocus: () => void, removeMySelf: () => void, focused: () => void, opt: OptionMap }
+    props: { image: ImageRef, isFocused: boolean, isImageViewMode: boolean, removeFocus: () => void, removeMySelf: () => void, focused: () => void, opt: OptionMap }
 ): ReactElement => {
     const image = props.image
     const divRef = useRef<HTMLDivElement>(null);
@@ -54,12 +54,12 @@ const Reference = (
             id={"imageDiv_" + image.uuid}
             ref={divRef}
             style={{
-                position: 'absolute',
+                position: props.isImageViewMode ? 'static' : 'absolute',
                 top: image.position.x!,
                 left: image.position.y!,
-                width: referenceSize[0],
-                height: referenceSize[1],
-                transform: `rotate(${image.position.rotate}deg)`,
+                width: props.isImageViewMode ? '15%' : referenceSize[0],
+                height: props.isImageViewMode ? 'unset' : referenceSize[1],
+                transform: props.isImageViewMode ? 'unset' : `rotate(${image.position.rotate}deg)`,
                 boxShadow: props.isFocused ? '0 0 16px 4px rgba(0, 0, 0, 0.5)' : '0 0 16px 4px rgba(0, 0, 0, 0.25)',
                 overflow: 'visible',
 
@@ -69,7 +69,6 @@ const Reference = (
                 backgroundPosition: '0 0, 16px 16px',
                 display: isPopupMode !== null ? 'none' : 'flex',
             }}
-            onMouseDown={() => props.focused()}
         >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -85,6 +84,7 @@ const Reference = (
                 }}
                 onDragStart={(e) => e.preventDefault()}
                 alt=""
+                onMouseDown={() => props.focused()}
             />
 
             <div

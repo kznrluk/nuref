@@ -3,14 +3,14 @@ import React, {useCallback, useEffect, useState} from "react";
 import {createImageRefFromUrl, ImageRef} from "../libs/ref/image";
 import {deleteImageRef, imageRefDb} from "../libs/db/imageRefDb";
 import Reference from "../components/reference";
-import {BsFolderPlus, BsGithub, BsShift, BsShiftFill} from "react-icons/bs";
+import {BsColumns, BsColumnsGap, BsFolderPlus, BsGithub, BsShift, BsShiftFill} from "react-icons/bs";
 
 const Home: NextPage = () => {
     const [imageList, setImageList] = useState<Array<ImageRef>>([])
     const [focusedUUID, setFocusedUUID] = useState<string | null>(null);
     const [emojiIndex, setEmojiIndex] = useState<number>(0);
-    // const [showHelp, setShowHelp] = useState<boolean>(false);
     const [isAltMode, setIsAltMode] = useState<boolean>(false);
+    const [isImageViewMode, setIsImageViewMode] = useState<boolean>(false);
 
     const addImage = useCallback(async (src: string, alt: string) => {
         const image = await createImageRefFromUrl(src);
@@ -21,14 +21,20 @@ const Home: NextPage = () => {
             .catch(e => console.error("cant add image to db: " + e))
     }, [])
 
-    const deleteFocusedImage = useCallback(() => {
-        const target = imageList.find(({uuid}) => uuid === focusedUUID);
-        if (!target || focusedUUID === '') {
+    const deleteImage = useCallback((targetUUID: string) => {
+        const target = imageList.find(({uuid}) => uuid === targetUUID);
+        if (!target) {
             return false;
         }
         deleteImageRef(target);
         setImageList(imageList.filter(e => e.uuid !== target.uuid));
-    }, [imageList, focusedUUID]);
+    }, [imageList])
+
+    const deleteFocusedImage = useCallback(() => {
+        if (focusedUUID !== null) {
+            deleteImage(focusedUUID);
+        }
+    }, [focusedUUID, deleteImage]);
 
     useEffect(() => {
         try {
@@ -125,6 +131,7 @@ const Home: NextPage = () => {
         const find = imageList.find(i => i.uuid === uuid)!
         if (find) {
             setImageList([...imageList.filter((i) => i.uuid !== uuid), find]);
+            setIsImageViewMode(false);
         }
     }, [imageList]);
 
@@ -135,9 +142,12 @@ const Home: NextPage = () => {
                     bringToFront(image.uuid);
                     setFocusedUUID(image.uuid);
                 }}
+                isImageViewMode={isImageViewMode}
                 isFocused={focusedUUID === image.uuid} image={image}
                 removeFocus={() => setFocusedUUID('')}
-                removeMySelf={() => deleteFocusedImage()}
+                removeMySelf={() => {
+                    deleteImage(image.uuid)
+                }}
                 key={image.uuid}
                 opt={{isAltMode: isAltMode}}
             />
@@ -163,8 +173,21 @@ const Home: NextPage = () => {
             >
             </div>
 
-            {imageElementList}
-
+            <div
+                style={{
+                    height: '100vh',
+                    width: '100vw',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'row-reverse',
+                    flexWrap: 'wrap',
+                    gap: '90px 20px',
+                    backgroundColor: isImageViewMode ? 'rgba(255, 255, 255, 0.5)' : 'unset',
+                }}
+            >
+                {imageElementList}
+            </div>
 
             <input
                 id="selectFiles"
@@ -188,7 +211,7 @@ const Home: NextPage = () => {
 
             <div
                 style={{
-                    position: 'absolute',
+                    position: 'fixed',
                     top: '12px',
                     left: '12px',
                     padding: '10px',
@@ -242,6 +265,22 @@ const Home: NextPage = () => {
                     onClick={() => setIsAltMode(!isAltMode)}
                 >
                     {isAltMode ? <BsShiftFill/> : <BsShift/>}
+                </div>
+                <div
+                    style={{
+                        fontSize: '24px',
+                        display: 'grid',
+                        placeItems: 'center',
+                        paddingLeft: '12px',
+                        cursor: 'pointer',
+                        paddingTop: '3px',
+                    }}
+                    onClick={() => {
+                        setIsImageViewMode(!isImageViewMode)
+                        setFocusedUUID('')
+                    }}
+                >
+                    {isImageViewMode ? <BsColumns/> : <BsColumnsGap/>}
                 </div>
                 <div
                     style={{
