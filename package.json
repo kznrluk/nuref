@@ -19,6 +19,7 @@
     "react-image-crop": "^10.0.4",
     "react-moveable": "^0.33.0",
     "react-select": "^5.4.0",
+    "react-toastify": "^9.0.5",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

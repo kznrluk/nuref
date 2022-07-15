@@ -23,7 +23,7 @@ const Home: NextPage = () => {
                 <div>
                     <Image alt="nuref logo" src={"/nulogo.png"} width={128} height={128} style={{
                         backgroundColor: "#FAFAFA",
-                    }}></Image>
+                    }}/>
                     <span style={{
                         fontSize: 'clamp(12px, 15vw, 256px)',
                     }}>NuRef</span>

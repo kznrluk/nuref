@@ -7,6 +7,8 @@ import {BsColumns, BsColumnsGap, BsFolderPlus, BsGithub, BsShift, BsShiftFill} f
 import {useRouter} from "next/router";
 import CreatableSelect from "react-select/creatable";
 import Head from 'next/head';
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const WorkSpace: NextPage = () => {
     const [imageList, setImageList] = useState<Array<ImageRef>>([])
@@ -120,7 +122,7 @@ const WorkSpace: NextPage = () => {
                 const url = URL.createObjectURL(file);
                 addImage(url)
             } else {
-                //
+
             }
         }
     }, [addImage])
@@ -305,7 +307,7 @@ const WorkSpace: NextPage = () => {
                                 const value = option!.value!;
                                 setWorkSpaceID(value);
                             }}
-                        ></CreatableSelect>
+                        />
                         :
                         <p>loading</p>
                     }
@@ -367,6 +369,18 @@ const WorkSpace: NextPage = () => {
                 >
                     <a href="https://github.com/kznrluk/nuref" target="_blank" rel="noreferrer"><BsGithub/></a>
                 </div>
+                <ToastContainer
+                    position="top-right"
+                    autoClose={2500}
+                    hideProgressBar={true}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme={"light"}
+                />
             </div>
         </>
     )
