@@ -9,8 +9,11 @@ import CreatableSelect from "react-select/creatable";
 import Head from 'next/head';
 import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import {useTranslation} from "react-i18next";
 
 const WorkSpace: NextPage = () => {
+    const [t, i18n] = useTranslation();
+    const [lang, setLang] = useState('en');
     const [imageList, setImageList] = useState<Array<ImageRef>>([])
     const [focusedUUID, setFocusedUUID] = useState<string | null>(null);
     const [emojiIndex, setEmojiIndex] = useState<number>(0);
@@ -20,6 +23,17 @@ const WorkSpace: NextPage = () => {
     const [tutorialStep, setTutorialStep] = useState<number>(0);
     const [workSpaceID, setWorkSpaceID] = useState<string | null>(null);
     const [availableWorkSpaceIDList, setAvailableWorkSpaceIDList] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (window) {
+            const lang = window.navigator.language;
+            setLang(lang === 'ja' ? 'ja' : 'en');
+        }
+    }, []);
+
+    useEffect(() => {
+        i18n.changeLanguage(lang)
+    }, [i18n, lang])
 
     const router = useRouter();
     // MEMO: Next側でエスケープしてくれるのでXSSは大丈夫
@@ -56,31 +70,32 @@ const WorkSpace: NextPage = () => {
     useEffect(() => {
         if (workSpaceID && workSpaceID !== 'main' && !imageList.some(i => i.workSpaces.includes(workSpaceID))) {
             if (imageDeleted) {
-                toast.warn(`${workSpaceID} の最後の画像が削除されました。ワークスペースは自動的に削除されます。`)
+                toast.warn(t('n_last_image_deleted', { workSpaceID }))
                 setImageDeleted(false);
             } else {
-                toast.success(`新しいワークスペース ${workSpaceID} が作成されました`)
+                toast.success(t('n_new_workspace', { workSpaceID }))
             }
         }
         if (imageList.length === 0 && workSpaceID === 'main' && !imageDeleted) {
             setTutorialStep(1);
-            toast(`👋 NuRefへようこそ！`, { autoClose: false })
-            setTimeout(() => toast(`🖼️ ドラッグアンドドロップ、もしくはコピーペーストで画像を追加できます。`, { autoClose: false }), 500);
+            console.log(lang)
+            toast(t('t_welcome_nuref'), { autoClose: false })
+            setTimeout(() => toast(t('t_dnd') as string, { autoClose: false }), 500);
         }
         if (tutorialStep === 1 && imageList.length >= 1) {
             setTutorialStep(2);
-            toast(`🎉 初めての画像が追加されました！`, { autoClose: false })
-            setTimeout(() => toast(`画像はブラウザ内に保存されます。バックアップは忘れずに...。`, { autoClose: false }), 500);
+            toast(t('t_image_added'), { autoClose: false })
+            setTimeout(() => toast(t('t_image_backup') as string, { autoClose: false }), 500);
         }
         if (tutorialStep === 2 && imageList.length >= 2) {
             setTutorialStep(3);
-            toast.info(`画像が増えてきたらワークスペースも使えます。`, { autoClose: false })
-            setTimeout(() => toast(`左上の「main」を書き換えて新しいワークスペースを作成してみましょう。`, { autoClose: false }), 500);
+            toast.info(t('t_workspace'), { autoClose: false })
+            setTimeout(() => toast(t('t_workspace_change'), { autoClose: false }), 500);
         }
         if (tutorialStep === 3 && workSpaceID !== 'main') {
             setTutorialStep(4);
-            setTimeout(() => toast.info(`ワークスペースはURLと一致しているので、ブックマークも使えるでしょう！`, { autoClose: false }), 500);
-            setTimeout(() => toast(`🎉 チュートリアルは以上です！`, { autoClose: false }), 1000);
+            setTimeout(() => toast(t('t_workspace_url'), { autoClose: false }), 500);
+            setTimeout(() => toast(t('t_end'), { autoClose: false }), 1000);
         }
     }, [imageList])
 
