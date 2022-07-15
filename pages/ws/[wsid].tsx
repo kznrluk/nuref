@@ -108,21 +108,24 @@ const WorkSpace: NextPage = () => {
     }, [])
 
     const addImageFromFiles = useCallback((fileList: FileList) => {
-        const files: File[] = [];
-        for (let i = 0; i < fileList.length; i++) {
-            // 😇😇😇
-            const f = fileList.item(i);
-            if (f) {
-                files.push(f)
-            }
-        }
-
-        for (const file of files) {
+        // @ts-ignore
+        for (const file of fileList) {
             if (file.type.startsWith("image/")) {
                 const url = URL.createObjectURL(file);
                 addImage(url)
-            } else {
+            }
+        }
+    }, [addImage])
 
+    const onPaste = useCallback((event: React.ClipboardEvent<HTMLDivElement>) => {
+        // @ts-ignore
+        for (const item of event.clipboardData.items) {
+            if (item.type.startsWith('image')) {
+                event.preventDefault();
+                event.stopPropagation();
+                const file = item.getAsFile()
+                const url = URL.createObjectURL(file);
+                addImage(url)
             }
         }
     }, [addImage])
@@ -132,31 +135,12 @@ const WorkSpace: NextPage = () => {
         addImageFromFiles(event.dataTransfer.files);
     }, [addImageFromFiles]);
 
-    const onPaste = useCallback((event: React.ClipboardEvent<HTMLDivElement>) => {
-        if (!event.clipboardData
-            || !event.clipboardData.types
-            || (event.clipboardData.types.length != 1)
-            || (event.clipboardData.types[0] != "Files")) {
-            return;
-        }
-
-        if (event.clipboardData.items[0]) {
-            const file = event.clipboardData.items[0].getAsFile();
-            if (file) {
-                event.preventDefault()
-                const url = URL.createObjectURL(file);
-                addImage(url)
-            }
-        }
-    }, [addImage])
-
     const onInput = useCallback((event: React.FormEvent<HTMLDivElement>) => {
+        // Firefox && Paste
         event.preventDefault()
         const imageTag = event.currentTarget.querySelector("img");
         if (imageTag) {
             addImage(imageTag.src)
-        } else {
-            console.log("not image")
         }
 
         event.currentTarget.innerHTML = '';
@@ -204,7 +188,7 @@ const WorkSpace: NextPage = () => {
                     height: '100%',
                     cursor: 'default',
                 }}
-                onPaste={(e) => onPaste(e)}
+                onPaste={onPaste}
                 onInput={(e) => onInput(e)}
                 onDrop={(e) => onDrop(e)}
                 onMouseDown={() => setFocusedUUID('')}
