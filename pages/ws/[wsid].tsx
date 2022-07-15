@@ -7,7 +7,7 @@ import {BsColumns, BsColumnsGap, BsFolderPlus, BsGithub, BsShift, BsShiftFill} f
 import {useRouter} from "next/router";
 import CreatableSelect from "react-select/creatable";
 import Head from 'next/head';
-import {ToastContainer} from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 const WorkSpace: NextPage = () => {
@@ -16,6 +16,8 @@ const WorkSpace: NextPage = () => {
     const [emojiIndex, setEmojiIndex] = useState<number>(0);
     const [isAltMode, setIsAltMode] = useState<boolean>(false);
     const [isImageViewMode, setIsImageViewMode] = useState<boolean>(false);
+    const [imageDeleted, setImageDeleted] = useState<boolean>(false);
+    const [tutorialStep, setTutorialStep] = useState<number>(0);
     const [workSpaceID, setWorkSpaceID] = useState<string | null>(null);
     const [availableWorkSpaceIDList, setAvailableWorkSpaceIDList] = useState<string[]>([]);
 
@@ -46,8 +48,40 @@ const WorkSpace: NextPage = () => {
         if (!target) {
             return false;
         }
+        setImageDeleted(true);
         deleteImageRef(target);
         setImageList(imageList.filter(e => e.uuid !== target.uuid));
+    }, [imageList])
+
+    useEffect(() => {
+        if (workSpaceID && workSpaceID !== 'main' && !imageList.some(i => i.workSpaces.includes(workSpaceID))) {
+            if (imageDeleted) {
+                toast.warn(`${workSpaceID} の最後の画像が削除されました。ワークスペースは自動的に削除されます。`)
+                setImageDeleted(false);
+            } else {
+                toast.success(`新しいワークスペース ${workSpaceID} が作成されました`)
+            }
+        }
+        if (imageList.length === 0 && workSpaceID === 'main' && !imageDeleted) {
+            setTutorialStep(1);
+            toast(`👋 NuRefへようこそ！`, { autoClose: false })
+            setTimeout(() => toast(`🖼️ ドラッグアンドドロップ、もしくはコピーペーストで画像を追加できます。`, { autoClose: false }), 500);
+        }
+        if (tutorialStep === 1 && imageList.length >= 1) {
+            setTutorialStep(2);
+            toast(`🎉 初めての画像が追加されました！`, { autoClose: false })
+            setTimeout(() => toast(`画像はブラウザ内に保存されます。バックアップは忘れずに...。`, { autoClose: false }), 500);
+        }
+        if (tutorialStep === 2 && imageList.length >= 2) {
+            setTutorialStep(3);
+            toast.info(`画像が増えてきたらワークスペースも使えます。`, { autoClose: false })
+            setTimeout(() => toast(`左上の「main」を書き換えて新しいワークスペースを作成してみましょう。`, { autoClose: false }), 500);
+        }
+        if (tutorialStep === 3 && workSpaceID !== 'main') {
+            setTutorialStep(4);
+            setTimeout(() => toast.info(`ワークスペースはURLと一致しているので、ブックマークも使えるでしょう！`, { autoClose: false }), 500);
+            setTimeout(() => toast(`🎉 チュートリアルは以上です！`, { autoClose: false }), 1000);
+        }
     }, [imageList])
 
     const deleteFocusedImage = useCallback(() => {
@@ -257,7 +291,7 @@ const WorkSpace: NextPage = () => {
                             fontSize: '16px',
                             paddingRight: '8px',
                         }}
-                    >NuRef β {['🖼️', '🎨', '🧑‍🎨', '🖌️'][emojiIndex]}</p>
+                    >NuRef {['🖼️', '🎨', '🧑‍🎨', '🖌️'][emojiIndex]}</p>
                 </div>
                 <div>
                     {router.isReady ?
