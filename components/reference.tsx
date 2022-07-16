@@ -274,8 +274,11 @@ const Reference = (
                         origin={false}
 
                         onClick={(e:OnClick) => {
-                            alert('HI')
                             e.inputEvent.preventDefault()
+                            if (e.target.onclick) {
+                                // iPad等ブラウザによってはImageElementにイベントを伝搬してくれないのでプロキシ
+                                e.target.onclick(e.inputEvent);
+                            }
                         }}
 
                         throttleDrag={0}
