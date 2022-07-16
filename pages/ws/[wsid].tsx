@@ -157,11 +157,18 @@ const WorkSpace: NextPage = () => {
     }, [])
 
     const addImageFromFiles = useCallback((fileList: FileList) => {
+        let added = false;
         // @ts-ignore
         for (const file of fileList) {
             if (file.type.startsWith("image/")) {
                 const url = URL.createObjectURL(file);
+                added = true;
                 addImage(url)
+            }
+        }
+        if (!added) {
+            if (window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+                toast.warn(t('warn_firefox_add_file'))
             }
         }
     }, [addImage])
