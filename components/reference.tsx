@@ -1,7 +1,7 @@
 import React, {ReactElement, useCallback, useEffect, useRef, useState} from "react";
 import {ImageRef} from "../libs/ref/image";
 import {updateImageRef} from "../libs/db/imageRefDb";
-import Moveable, {OnDrag, OnDragEnd, OnResize, OnRotate} from "react-moveable";
+import Moveable, {OnClick, OnDrag, OnDragEnd, OnResize, OnRotate} from "react-moveable";
 import {flushSync} from "react-dom";
 import {OnResizeEnd, OnRotateEnd} from "react-moveable/types";
 import ReactCrop, {Crop, PixelCrop} from "react-image-crop";
@@ -272,6 +272,11 @@ const Reference = (
                         target={document.getElementById("imageDiv_" + image.uuid)}
                         draggable={isFocused && !isEditMode}
                         origin={false}
+
+                        onClick={(e:OnClick) => {
+                            alert('HI')
+                            e.inputEvent.preventDefault()
+                        }}
 
                         throttleDrag={0}
                         onDragStart={() => props.focused()}
