@@ -98,8 +98,12 @@ const WorkSpace: NextPage = () => {
         }
 
         if (router.isReady && imageList.length === 0 && workSpaceID === 'main' && !lastImageDeleted) {
-            setTutorialStep(1);
-            toast(t('t_welcome_nuref'), { autoClose: false })
+            if (isIOS) {
+                toast.error(t('warn_ios'), {autoClose: false})
+            } else {
+                setTutorialStep(1);
+                toast(t('t_welcome_nuref'), { autoClose: false })
+            }
         }
         if (tutorialStep === 1 && imageList.length >= 1 && workSpaceID === 'main') {
             setTutorialStep(2);
