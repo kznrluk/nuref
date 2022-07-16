@@ -31,6 +31,14 @@ const WorkSpace: NextPage = () => {
     const [tutorialStep, setTutorialStep] = useState<number>(0);
     const [workSpaceID, setWorkSpaceID] = useState<string | null>(null);
     const [availableWorkSpaceIDList, setAvailableWorkSpaceIDList] = useState<string[]>([]);
+    const [isIOS, setIsIOS] = useState<boolean>(false);
+
+    useEffect(() => {
+        const ua = window.navigator.userAgent.toLowerCase();
+        if (ua.indexOf("ipad") > -1 || (ua.indexOf("macintosh") > -1 && "ontouchend" in document) || /[ \(]ip/.test(ua)) {
+            setIsIOS(true)
+        }
+    }, [])
 
     useEffect(() => {
         if (window) {
@@ -245,7 +253,7 @@ const WorkSpace: NextPage = () => {
                 <title>{workSpaceID} - NuRef</title>
             </Head>
             <div
-                contentEditable={true}
+                contentEditable={!isIOS}
                 style={{
                     position: 'absolute',
                     top: 0,

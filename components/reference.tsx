@@ -21,6 +21,7 @@ const Reference = (
     const divRef = useRef<HTMLDivElement>(null);
     const [isFlipped, setIsFlipped] = useState<boolean>(image.isFlipped);
     const [isEditMode, setIsEditMode] = useState<boolean>(false);
+    const [isIOS, setIsIOS] = useState<boolean>(false);
     const [isUpdatingSize, setIsUpdatingSize] = useState<boolean>(false);
     const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
     const [crop, setCrop] = useState<Crop>()
@@ -31,6 +32,13 @@ const Reference = (
 
     const isFocused = props.isFocused;
     const isAltMode = props.opt.isAltMode
+
+    useEffect(() => {
+        const ua = window.navigator.userAgent.toLowerCase();
+        if (ua.indexOf("ipad") > -1 || (ua.indexOf("macintosh") > -1 && "ontouchend" in document) || /[ \(]ip/.test(ua)) {
+            setIsIOS(true)
+        }
+    }, [])
 
     useEffect(() => {
         image.isFlipped = isFlipped;
@@ -48,6 +56,74 @@ const Reference = (
             }, 150);
         }
     }, [isPopupMode])
+
+    const controller = (
+        <div
+            style={{
+                position: 'absolute',
+                bottom: isIOS ? '32px' : '-64px',
+                left: '50%',
+                transform: 'translate(-50%)',
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                padding: '5px',
+                borderRadius: '3px',
+                display: isFocused ? 'flex' : 'none',
+                color: '#e8eaec',
+            }}
+        >
+            <div>
+                <BiCrop
+                    style={{
+                        fontSize: '32px',
+                        paddingTop: '3px',
+                        cursor: 'pointer'
+                    }}
+                    onClick={() => !isEditMode ? setIsEditMode(true) : applyCropping()}
+                />
+            </div>
+            <div>
+                <CgEditFlipH
+                    style={{
+                        fontSize: '32px',
+                        paddingTop: '3px',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => setIsFlipped(!isFlipped)}
+                >
+                </CgEditFlipH>
+            </div>
+
+            <div>
+                <BiMinusFront
+                    style={{
+                        fontSize: '32px',
+                        paddingTop: '3px',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                        const d = window.open('' +
+                            `/popup?uuid=${image.uuid}`,
+                            '_blank',
+                            `popup=1,width=${referenceSize[0] * 1.3},height=${referenceSize[1] * 1.3}`
+                        );
+                        props.removeFocus();
+                        setIsPopupMode(d)
+                    }}
+                >
+                </BiMinusFront>
+            </div>
+            <div>
+                <BiTrash
+                    style={{
+                        fontSize: '32px',
+                        paddingTop: '3px',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => props.removeMySelf()}
+                />
+            </div>
+        </div>
+    )
 
     const imageElement = (
         <div
@@ -87,72 +163,7 @@ const Reference = (
                 alt=""
                 onMouseDown={() => props.focused()}
             />
-
-            <div
-                style={{
-                    position: 'absolute',
-                    bottom: '-64px',
-                    left: '50%',
-                    transform: 'translate(-50%)',
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                    padding: '5px',
-                    borderRadius: '3px',
-                    display: isFocused ? 'flex' : 'none',
-                    color: '#e8eaec',
-                }}
-            >
-                <div>
-                    <BiCrop
-                        style={{
-                            fontSize: '32px',
-                            paddingTop: '3px',
-                            cursor: 'pointer'
-                        }}
-                        onClick={() => !isEditMode ? setIsEditMode(true) : applyCropping()}
-                    />
-                </div>
-                <div>
-                    <CgEditFlipH
-                        style={{
-                            fontSize: '32px',
-                            paddingTop: '3px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => setIsFlipped(!isFlipped)}
-                    >
-                    </CgEditFlipH>
-                </div>
-
-                <div>
-                    <BiMinusFront
-                        style={{
-                            fontSize: '32px',
-                            paddingTop: '3px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                            const d = window.open('' +
-                                `/popup?uuid=${image.uuid}`,
-                                '_blank',
-                                `popup=1,width=${referenceSize[0] * 1.3},height=${referenceSize[1] * 1.3}`
-                            );
-                            props.removeFocus();
-                            setIsPopupMode(d)
-                        }}
-                    >
-                    </BiMinusFront>
-                </div>
-                <div>
-                    <BiTrash
-                        style={{
-                            fontSize: '32px',
-                            paddingTop: '3px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => props.removeMySelf()}
-                    />
-                </div>
-            </div>
+            {isIOS ? '' :controller}
         </div>
     )
 
@@ -266,6 +277,7 @@ const Reference = (
                 </div>
                 :
                 <>
+                    {isIOS ? controller : "" /* IOSはdivの中に入れるとクリックイベントが効かなくなる */}
                     {imageElement}
                     <Moveable
                         flushSync={flushSync}
