@@ -82,6 +82,7 @@ const Reference = (
                     height: `100%`,
                     transform: isFlipped ? 'scaleX(-1)' : '',
                     maxHeight: props.isImageViewMode ? '512px' : 'unset',
+                    cursor: props.isImageViewMode ? 'pointer' : 'unset',
                 }}
                 onDragStart={(e) => e.preventDefault()}
                 alt=""

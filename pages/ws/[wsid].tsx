@@ -261,7 +261,7 @@ const WorkSpace: NextPage = () => {
                     flexDirection: 'row-reverse',
                     flexWrap: 'wrap',
                     gap: '90px 20px',
-                    backgroundColor: isImageViewMode ? 'rgba(255, 255, 255, 0.5)' : 'unset',
+                    backgroundColor: isImageViewMode ? 'rgba(255, 255, 255, 0.3)' : 'unset',
                 }}
             >
                 {imageElementList}
