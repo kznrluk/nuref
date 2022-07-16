@@ -76,26 +76,21 @@ const WorkSpace: NextPage = () => {
                 toast.success(t('n_new_workspace', { workSpaceID }))
             }
         }
-        if (imageList.length === 0 && workSpaceID === 'main' && !imageDeleted) {
+        if (router.isReady && imageList.length === 0 && workSpaceID === 'main' && !imageDeleted) {
             setTutorialStep(1);
-            console.log(lang)
             toast(t('t_welcome_nuref'), { autoClose: false })
-            setTimeout(() => toast(t('t_dnd') as string, { autoClose: false }), 500);
         }
-        if (tutorialStep === 1 && imageList.length >= 1) {
+        if (tutorialStep === 1 && imageList.length >= 1 && workSpaceID === 'main') {
             setTutorialStep(2);
             toast(t('t_image_added'), { autoClose: false })
-            setTimeout(() => toast(t('t_image_backup') as string, { autoClose: false }), 500);
         }
-        if (tutorialStep === 2 && imageList.length >= 2) {
+        if (tutorialStep === 2 && imageList.length >= 2 && workSpaceID === 'main') {
             setTutorialStep(3);
-            toast.info(t('t_workspace'), { autoClose: false })
-            setTimeout(() => toast(t('t_workspace_change'), { autoClose: false }), 500);
+            toast(t('t_workspace'), { autoClose: false })
         }
         if (tutorialStep === 3 && workSpaceID !== 'main') {
             setTutorialStep(4);
             setTimeout(() => toast(t('t_workspace_url'), { autoClose: false }), 500);
-            setTimeout(() => toast(t('t_end'), { autoClose: false }), 1000);
         }
     }, [imageList])
 

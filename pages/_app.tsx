@@ -9,28 +9,20 @@ i18next.use(initReactI18next).init({
       translation : {
         'n_last_image_deleted': 'The last image of {{workSpaceID}} has been deleted. Your workspace will be deleted automatically.',
         'n_new_workspace': 'A new workspace {{workSpaceID}} has been created',
-        't_welcome_nuref': '👋 Welcome to NuRef!',
-        't_dnd': '🖼️ Images can be added by DnD or copy-paste.',
-        't_image_added': '🎉 Your first image has been added!',
-        't_image_backup': 'Images will be saved in your browser. Don\'t forget to back them up.',
-        't_workspace': 'You can also use the workspace if you have more images.',
-        't_workspace_change': 'Let\'s rewrite "main" in the upper left corner to create a new workspace.',
-        't_workspace_url': '💡 The workspace name matches the URL, so maybe we could use some bookmarks!',
-        't_end': 'That\'s it for the tutorial.',
+        't_welcome_nuref': '👋 Welcome to NuRef! Images can be added by DnD or copy-paste.',
+        't_image_added': '🎉 Your first image has been added! Images will be saved in your browser. Don\'t forget to back them up.',
+        't_workspace': '📝 You can also use the workspace if you have more images. Let\'s rewrite "main" in the upper left corner to create a new workspace.',
+        't_workspace_url': '💡 The workspace name matches the URL so you can bookmark it! That\'s all for the tutorial.',
       }
     },
     ja: {
       translation : {
         'n_last_image_deleted': '{{workSpaceID}} の最後の画像が削除されました。ワークスペースは自動的に削除されます。',
         'n_new_workspace': '新しいワークスペース {{workSpaceID}} が作成されました',
-        't_welcome_nuref': '👋 NuRefへようこそ！',
-        't_dnd': '🖼️ ドラッグアンドドロップ、もしくはコピーペーストで画像を追加できます。',
-        't_image_added': '🎉 初めての画像が追加されました！',
-        't_image_backup': '画像はブラウザ内に保存されます。バックアップは忘れずに...。',
-        't_workspace': '画像が増えてきたらワークスペースも使えます。',
-        't_workspace_change': '左上の「main」を書き換えて新しいワークスペースを作成してみましょう。',
-        't_workspace_url': '💡 ワークスペースはURLと一致しているので、ブックマークしてもOKです！',
-        't_end': '🎉 チュートリアルは以上です',
+        't_welcome_nuref': '👋 NuRefへようこそ！ドラッグアンドドロップ、もしくはコピーペーストで画像を追加できます。',
+        't_image_added': '🎉 初めての画像が追加されました！画像はブラウザ内に保存されます。バックアップは忘れずに...。',
+        't_workspace': '📝 画像が増えてきたらワークスペースも使えます。左上の「main」を書き換えて新しいワークスペースを作成してみましょう。',
+        't_workspace_url': '💡 ワークスペースはURLと一致しているので、ブックマークしてもOKです！チュートリアルは以上です。',
       }
     }
   }

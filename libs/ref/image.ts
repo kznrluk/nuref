@@ -10,6 +10,8 @@ export class ImageRef {
     public croppedImageObjectURL: string | undefined;
     public workSpaces: string[] = [];
 
+    public meta: string | null = null; // 予備
+
     private objectURL: string | undefined;
 
     constructor(blob: Blob, id: string) {
