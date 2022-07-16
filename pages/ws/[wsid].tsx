@@ -167,7 +167,9 @@ const WorkSpace: NextPage = () => {
             }
         }
         if (!added) {
-            if (window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+            if (window.navigator.userAgent.toLowerCase().indexOf('mac os x') > -1) {
+                toast.warn(t('warn_macos_add_file'))
+            } else if (window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
                 toast.warn(t('warn_firefox_add_file'))
             }
         }
@@ -411,7 +413,7 @@ const WorkSpace: NextPage = () => {
                 </div>
                 <ToastContainer
                     position="top-right"
-                    autoClose={2500}
+                    autoClose={5000}
                     hideProgressBar={true}
                     newestOnTop={false}
                     closeOnClick
