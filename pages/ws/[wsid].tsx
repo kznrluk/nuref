@@ -19,7 +19,7 @@ const WorkSpace: NextPage = () => {
     const [emojiIndex, setEmojiIndex] = useState<number>(0);
     const [isAltMode, setIsAltMode] = useState<boolean>(false);
     const [isImageViewMode, setIsImageViewMode] = useState<boolean>(false);
-    const [imageDeleted, setImageDeleted] = useState<boolean>(false);
+    const [lastImageDeleted, setLastImageDeleted] = useState<boolean>(false);
     const [tutorialStep, setTutorialStep] = useState<number>(0);
     const [workSpaceID, setWorkSpaceID] = useState<string | null>(null);
     const [availableWorkSpaceIDList, setAvailableWorkSpaceIDList] = useState<string[]>([]);
@@ -62,21 +62,26 @@ const WorkSpace: NextPage = () => {
         if (!target) {
             return false;
         }
-        setImageDeleted(true);
+
+        if (imageList.filter(i => i.workSpaces.includes(workSpaceID!)).length === 1) {
+            setLastImageDeleted(true);
+        }
+
         deleteImageRef(target);
         setImageList(imageList.filter(e => e.uuid !== target.uuid));
     }, [imageList])
 
     useEffect(() => {
         if (workSpaceID && workSpaceID !== 'main' && !imageList.some(i => i.workSpaces.includes(workSpaceID))) {
-            if (imageDeleted) {
+            if (lastImageDeleted) {
                 toast.warn(t('n_last_image_deleted', { workSpaceID }))
-                setImageDeleted(false);
             } else {
                 toast.success(t('n_new_workspace', { workSpaceID }))
             }
+            setLastImageDeleted(false);
         }
-        if (router.isReady && imageList.length === 0 && workSpaceID === 'main' && !imageDeleted) {
+
+        if (router.isReady && imageList.length === 0 && workSpaceID === 'main' && !lastImageDeleted) {
             setTutorialStep(1);
             toast(t('t_welcome_nuref'), { autoClose: false })
         }
