@@ -3,13 +3,21 @@ import React, {useCallback, useEffect, useState} from "react";
 import {createImageRefFromUrl, ImageRef} from "../../libs/ref/image";
 import {deleteImageRef, imageRefDb} from "../../libs/db/imageRefDb";
 import Reference from "../../components/reference";
-import {BsColumns, BsColumnsGap, BsFolderPlus, BsGithub, BsShift, BsShiftFill} from "react-icons/bs";
+import {
+    BsColumns,
+    BsColumnsGap,
+    BsFolderPlus,
+    BsGithub,
+    BsShift,
+    BsShiftFill
+} from "react-icons/bs";
 import {useRouter} from "next/router";
 import CreatableSelect from "react-select/creatable";
 import Head from 'next/head';
 import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {useTranslation} from "react-i18next";
+import {FiThumbsDown, FiThumbsUp} from "react-icons/fi";
 
 const WorkSpace: NextPage = () => {
     const [t, i18n] = useTranslation();
@@ -23,6 +31,14 @@ const WorkSpace: NextPage = () => {
     const [tutorialStep, setTutorialStep] = useState<number>(0);
     const [workSpaceID, setWorkSpaceID] = useState<string | null>(null);
     const [availableWorkSpaceIDList, setAvailableWorkSpaceIDList] = useState<string[]>([]);
+    const [isIOS, setIsIOS] = useState<boolean>(false);
+
+    useEffect(() => {
+        const ua = window.navigator.userAgent.toLowerCase();
+        if (ua.indexOf("ipad") > -1 || (ua.indexOf("macintosh") > -1 && "ontouchend" in document) || /[ \(]ip/.test(ua)) {
+            setIsIOS(true)
+        }
+    }, [])
 
     useEffect(() => {
         if (window) {
@@ -82,8 +98,12 @@ const WorkSpace: NextPage = () => {
         }
 
         if (router.isReady && imageList.length === 0 && workSpaceID === 'main' && !lastImageDeleted) {
-            setTutorialStep(1);
-            toast(t('t_welcome_nuref'), { autoClose: false })
+            if (isIOS) {
+                toast.error(t('warn_ios'), {autoClose: false})
+            } else {
+                setTutorialStep(1);
+                toast(t('t_welcome_nuref'), { autoClose: false })
+            }
         }
         if (tutorialStep === 1 && imageList.length >= 1 && workSpaceID === 'main') {
             setTutorialStep(2);
@@ -167,7 +187,9 @@ const WorkSpace: NextPage = () => {
             }
         }
         if (!added) {
-            if (window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+            if (window.navigator.userAgent.toLowerCase().indexOf('mac os x') > -1) {
+                toast.warn(t('warn_macos_add_file'))
+            } else if (window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
                 toast.warn(t('warn_firefox_add_file'))
             }
         }
@@ -235,7 +257,7 @@ const WorkSpace: NextPage = () => {
                 <title>{workSpaceID} - NuRef</title>
             </Head>
             <div
-                contentEditable={true}
+                contentEditable={!isIOS}
                 style={{
                     position: 'absolute',
                     top: 0,
@@ -409,9 +431,31 @@ const WorkSpace: NextPage = () => {
                 >
                     <a href="https://github.com/kznrluk/nuref" target="_blank" rel="noreferrer"><BsGithub/></a>
                 </div>
+                <div
+                    style={{
+                        fontSize: '24px',
+                        display: 'grid',
+                        placeItems: 'center',
+                        paddingLeft: '12px',
+                        paddingTop: '3px',
+                    }}
+                >
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1uiiZmnnmolnUdvKJtj_QzXefgFbNLHd9GV1T-PUy_1f7kg/viewform?usp=sf_link" target="_blank" rel="noreferrer"><FiThumbsUp/></a>
+                </div>
+                <div
+                    style={{
+                        fontSize: '24px',
+                        display: 'grid',
+                        placeItems: 'center',
+                        paddingLeft: '6px',
+                        paddingTop: '3px',
+                    }}
+                >
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfkR0WpcpfoyyL-5Vt4aTpMPKYyN9AnhUAEm1pTTPqZ-syyDw/viewform?usp=sf_link" target="_blank" rel="noreferrer"><FiThumbsDown/></a>
+                </div>
                 <ToastContainer
                     position="top-right"
-                    autoClose={2500}
+                    autoClose={5000}
                     hideProgressBar={true}
                     newestOnTop={false}
                     closeOnClick

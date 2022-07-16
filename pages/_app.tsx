@@ -13,7 +13,9 @@ i18next.use(initReactI18next).init({
         't_image_added': '🎉 Your first image has been added! Images will be saved in your browser. Don\'t forget to back them up.',
         't_workspace': '📝 You can also use the workspace if you have more images. Let\'s rewrite "main" in the upper left corner to create a new workspace.',
         't_workspace_url': '💡 The workspace name matches the URL so you can bookmark it! That\'s all for the tutorial.',
-        'warn_firefox_add_file': 'Cannot drop in Firefox. Try copy-paste.'
+        'warn_firefox_add_file': 'Firefox cannot drop from other websites or apps. Try copy-paste.',
+        'warn_macos_add_file': 'macOS cannot drop from other websites or apps. Try copy-paste.',
+        'warn_ios': 'This browser is not supported.',
       }
     },
     ja: {
@@ -24,7 +26,9 @@ i18next.use(initReactI18next).init({
         't_image_added': '🎉 初めての画像が追加されました！画像はブラウザ内に保存されます。バックアップは忘れずに...。',
         't_workspace': '📝 画像が増えてきたらワークスペースも使えます。左上の「main」を書き換えて新しいワークスペースを作成してみましょう。',
         't_workspace_url': '💡 ワークスペースはURLと一致しているので、ブックマークしてもOKです！チュートリアルは以上です。',
-        'warn_firefox_add_file': 'Firefoxの場合はドロップできないかもしれません。コピーペーストを試してみてください。'
+        'warn_firefox_add_file': 'Firefoxの場合は他のウェブサイト・アプリからドロップできません。コピーペーストを試してみてください。',
+        'warn_macos_add_file': 'macOSの場合は他のウェブサイト・アプリからドロップできません。コピーペーストを試してみてください。',
+        'warn_ios': 'このブラウザはサポートされていません。動作に不具合が発生する可能性があります。'
       }
     }
   }
