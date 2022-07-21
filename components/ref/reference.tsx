@@ -10,13 +10,17 @@ import clsx from "clsx";
 import styles from "./reference.module.scss"
 import Editor from "./editor";
 
-export interface OptionMap {
+export interface ReferenceProps {
+    image: ImageRef
+    isFocused: boolean
+    isImageViewMode: boolean
     isAltMode: boolean
+    removeFocus: () => void
+    removeMySelf: () => void
+    focused: () => void
 }
 
-const Reference = (
-    props: { image: ImageRef, isFocused: boolean, isImageViewMode: boolean, removeFocus: () => void, removeMySelf: () => void, focused: () => void, opt: OptionMap }
-): ReactElement => {
+const Reference = (props: ReferenceProps): ReactElement => {
     const image = props.image
     const [isFlipped, setIsFlipped] = useState<boolean>(image.isFlipped);
     const [isEditMode, setIsEditMode] = useState<boolean>(false);
@@ -25,9 +29,8 @@ const Reference = (
     const viewImageRef = useRef<HTMLImageElement>(null)
     const [referenceSize, setReferenceSize] = useState<number[]>([image.position.width, image.position.height])
     const [isPopupMode, setIsPopupMode] = useState<Window | null>(null);
-
     const isFocused = props.isFocused;
-    const isAltMode = props.opt.isAltMode
+    const isAltMode = props.isAltMode;
 
     useEffect(() => {
         const ua = window.navigator.userAgent.toLowerCase();
@@ -40,6 +43,22 @@ const Reference = (
         image.isFlipped = isFlipped;
         updateImageRef(image)
     }, [image, isFlipped])
+
+    useEffect(() => {
+        if (image.positionUpdated === 0 || isUpdatingSize) {
+            const img = viewImageRef.current!;
+            img.onload = () => {
+                const ratio = img.naturalWidth / img.naturalHeight;
+                const width = 500 * ratio;
+                const height = 500;
+                image.updatePosition(null, null, width, height, null);
+                updateImageRef(image)
+                setReferenceSize([width, height])
+                setIsUpdatingSize(false);
+                props.removeFocus(); // hotfix: Moveableの枠が残る問題
+            }
+        }
+    }, [image, image.positionUpdated, isUpdatingSize, props])
 
     const popupButtonHandler = () => {
         const opened = window.open(
@@ -57,6 +76,18 @@ const Reference = (
         props.removeFocus();
         setIsPopupMode(opened)
     };
+
+    const updatePositionFromElement = (target: HTMLElement | SVGElement, rotate: number | null = null) => {
+        image.updatePosition(
+            +target.style!.top.split('px')[0],
+            +target.style!.left.split('px')[0],
+            +target.style!.width.split('px')[0],
+            +target.style!.height.split('px')[0],
+            rotate ? rotate : null
+        );
+        updateImageRef(image);
+        setReferenceSize([+target.style!.width.split('px')[0], +target.style!.height.split('px')[0]]);
+    }
 
     const controller = (
         <Controller
@@ -98,34 +129,6 @@ const Reference = (
         </div>
     )
 
-    useEffect(() => {
-        if (image.positionUpdated === 0 || isUpdatingSize) {
-            const img = viewImageRef.current!;
-            img.onload = () => {
-                const ratio = img.naturalWidth / img.naturalHeight;
-                const width = 500 * ratio;
-                const height = 500;
-                image.updatePosition(null, null, width, height, null);
-                updateImageRef(image)
-                setReferenceSize([width, height])
-                setIsUpdatingSize(false);
-                props.removeFocus(); // hotfix: Moveableの枠が残る問題
-            }
-        }
-    }, [image, image.positionUpdated, isUpdatingSize, props])
-
-    const updatePositionFromElement = (target: HTMLElement | SVGElement, rotate: number | null = null) => {
-        image.updatePosition(
-            +target.style!.top.split('px')[0],
-            +target.style!.left.split('px')[0],
-            +target.style!.width.split('px')[0],
-            +target.style!.height.split('px')[0],
-            rotate ? rotate : null
-        );
-        updateImageRef(image);
-        setReferenceSize([+target.style!.width.split('px')[0], +target.style!.height.split('px')[0]]);
-    }
-
     const editor = <Editor image={image} onEditEnd={() => { setIsEditMode(false); setIsUpdatingSize(true) }}></Editor>;
     const viewer = (
         <>
@@ -158,14 +161,8 @@ const Reference = (
                 onResizeEnd={(event: OnResizeEnd) => updatePositionFromElement(event.target)}
 
                 rotatable={isFocused && !isEditMode}
-                onRotate={(event: OnRotate) => {
-                    const {target, rotate, transform} = event;
-                    if (!isAltMode) {
-                        target!.style.transform = transform;
-                    } else {
-                        const throttle = Math.round(rotate / 22.5) / (1 / 22.5)
-                        target!.style.transform = `rotate(${throttle}deg)`;
-                    }
+                onRotate={({target, rotate, transform}) => {
+                    target!.style.transform = isAltMode ? `rotate(${Math.round(rotate / 22.5) / (1 / 22.5)}deg)` : transform
                 }}
                 onRotateEnd={(event: OnRotateEnd) => {
                     const rotateEvent = event.lastEvent as OnRotate;
