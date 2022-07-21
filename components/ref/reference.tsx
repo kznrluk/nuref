@@ -1,14 +1,15 @@
 import React, {ReactElement, useCallback, useEffect, useRef, useState} from "react";
-import {ImageRef} from "../libs/ref/image";
-import {updateImageRef} from "../libs/db/imageRefDb";
+import {ImageRef} from "../../libs/ref/image";
+import {updateImageRef} from "../../libs/db/imageRefDb";
 import Moveable, {OnDrag, OnDragEnd, OnResize, OnRotate} from "react-moveable";
 import {flushSync} from "react-dom";
 import {OnResizeEnd, OnRotateEnd} from "react-moveable/types";
 import ReactCrop, {Crop, PixelCrop} from "react-image-crop";
 import 'react-image-crop/dist/ReactCrop.css'
-import {createCanvas} from "./createCanvas";
-import {BiCrop, BiMinusFront, BiTrash} from "react-icons/bi";
-import {CgEditFlipH} from "react-icons/cg";
+import {createCanvas} from "../createCanvas";
+import Controller from "./controller";
+import clsx from "clsx";
+import styles from "./reference.module.scss"
 
 export interface OptionMap {
     isAltMode: boolean
@@ -18,7 +19,6 @@ const Reference = (
     props: { image: ImageRef, isFocused: boolean, isImageViewMode: boolean, removeFocus: () => void, removeMySelf: () => void, focused: () => void, opt: OptionMap }
 ): ReactElement => {
     const image = props.image
-    const divRef = useRef<HTMLDivElement>(null);
     const [isFlipped, setIsFlipped] = useState<boolean>(image.isFlipped);
     const [isEditMode, setIsEditMode] = useState<boolean>(false);
     const [isIOS, setIsIOS] = useState<boolean>(false);
@@ -28,7 +28,7 @@ const Reference = (
     const cropImageRef = useRef<HTMLImageElement>(null)
     const viewImageRef = useRef<HTMLImageElement>(null)
     const [referenceSize, setReferenceSize] = useState<number[]>([image.position.width, image.position.height])
-    const [isPopupMode, setIsPopupMode] = useState<Window|null>(null);
+    const [isPopupMode, setIsPopupMode] = useState<Window | null>(null);
 
     const isFocused = props.isFocused;
     const isAltMode = props.opt.isAltMode
@@ -57,114 +57,59 @@ const Reference = (
         }
     }, [isPopupMode])
 
-    const controller = (
-        <div
-            style={{
-                position: 'absolute',
-                bottom: isIOS ? '32px' : '-64px',
-                left: '50%',
-                transform: 'translate(-50%)',
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                padding: '5px',
-                borderRadius: '3px',
-                display: isFocused ? 'flex' : 'none',
-                color: '#e8eaec',
-            }}
-        >
-            <div>
-                <BiCrop
-                    style={{
-                        fontSize: '32px',
-                        paddingTop: '3px',
-                        cursor: 'pointer'
-                    }}
-                    onClick={() => !isEditMode ? setIsEditMode(true) : applyCropping()}
-                />
-            </div>
-            <div>
-                <CgEditFlipH
-                    style={{
-                        fontSize: '32px',
-                        paddingTop: '3px',
-                        cursor: 'pointer',
-                    }}
-                    onClick={() => setIsFlipped(!isFlipped)}
-                >
-                </CgEditFlipH>
-            </div>
+    const popupButtonHandler = () => {
+        const opened = window.open(
+            `/popup?uuid=${image.uuid}`, '_blank',
+            `popup=1,width=${referenceSize[0] * 1.3},height=${referenceSize[1] * 1.3}`
+        );
+        const timer = setInterval(() => {
+            if (opened!.closed) {
+                clearInterval(timer);
+                setIsPopupMode(null)
+                props.focused();
+            }
+        }, 150);
 
-            <div>
-                <BiMinusFront
-                    style={{
-                        fontSize: '32px',
-                        paddingTop: '3px',
-                        cursor: 'pointer',
-                    }}
-                    onClick={() => {
-                        const d = window.open('' +
-                            `/popup?uuid=${image.uuid}`,
-                            '_blank',
-                            `popup=1,width=${referenceSize[0] * 1.3},height=${referenceSize[1] * 1.3}`
-                        );
-                        props.removeFocus();
-                        setIsPopupMode(d)
-                    }}
-                >
-                </BiMinusFront>
-            </div>
-            <div>
-                <BiTrash
-                    style={{
-                        fontSize: '32px',
-                        paddingTop: '3px',
-                        cursor: 'pointer',
-                    }}
-                    onClick={() => props.removeMySelf()}
-                />
-            </div>
-        </div>
+        props.removeFocus();
+        setIsPopupMode(opened)
+    };
+
+    const controller = (
+        <Controller
+            onClickCropButton={() => setIsEditMode(true)}
+            onClickFlipButton={() => setIsFlipped(!isFlipped)}
+            onClickPopUpButton={popupButtonHandler}
+            onClickTrashButton={() => props.removeMySelf()}
+        />
     )
 
     const imageElement = (
         <div
             id={"imageDiv_" + image.uuid}
-            ref={divRef}
+            className={clsx(
+                styles.reference,
+                isFocused && styles.referenceIsFocused,
+                isPopupMode && styles.referencePopUpMode,
+                props.isImageViewMode && styles.referenceViewMode,
+            )}
+
             style={{
-                position: props.isImageViewMode ? 'static' : 'absolute',
                 top: image.position.x!,
                 left: image.position.y!,
                 width: props.isImageViewMode ? '20%' : referenceSize[0],
                 height: props.isImageViewMode ? 'unset' : referenceSize[1],
-                transform: props.isImageViewMode ? 'unset' : `rotate(${image.position.rotate}deg)`,
-                boxShadow: props.isFocused ? '0 0 16px 4px rgba(0, 0, 0, 0.5)' : '0 0 16px 4px rgba(0, 0, 0, 0.25)',
-                overflow: 'visible',
-
-                background: 'linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%), linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%)',
-                backgroundColor: '#FFFFFF',
-                backgroundSize: '32px 32px',
-                backgroundPosition: '0 0, 16px 16px',
-                display: isPopupMode !== null ? 'none' : 'flex',
+                transform: `rotate(${image.position.rotate}deg)`,
             }}
         >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
                 ref={viewImageRef}
                 src={image.getSrc()}
-                style={{
-                    display: !isEditMode ? 'unset' : 'none',
-                    objectFit: 'cover',
-                    position: 'relative',
-                    width: `100%`,
-                    height: `100%`,
-                    transform: isFlipped ? 'scaleX(-1)' : '',
-                    maxHeight: props.isImageViewMode ? '512px' : 'unset',
-                    cursor: props.isImageViewMode ? 'pointer' : 'unset',
-                }}
-                onDragStart={(e) => e.preventDefault()}
-                alt=""
+                alt="reference"
+                style={{ transform: isFlipped ? 'scaleX(-1)' : 'unset' }}
                 onMouseDown={() => props.focused()}
             />
-            {isIOS ? '' :controller}
+            { isFocused ? controller : '' }
         </div>
     )
 

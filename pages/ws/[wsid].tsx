@@ -2,7 +2,7 @@ import type {NextPage} from 'next'
 import React, {useCallback, useEffect, useState} from "react";
 import {createImageRefFromUrl, ImageRef} from "../../libs/ref/image";
 import {deleteImageRef, imageRefDb} from "../../libs/db/imageRefDb";
-import Reference from "../../components/reference";
+import Reference from "../../components/ref/reference";
 import {
     BsColumns,
     BsColumnsGap,

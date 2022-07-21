@@ -1,0 +1,41 @@
+.reference {
+  position: absolute;
+  overflow: visible;
+
+  display: flex;
+
+  background: linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%), linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%);
+  background-color: #FFFFFF;
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+
+  box-shadow: 0 0 16px 4px rgba(0, 0, 0, 0.25);
+
+  &IsFocused {
+    box-shadow: 0 0 16px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  &ViewMode {
+    position: static;
+    width: 20%;
+    height: unset;
+    transform: unset;
+
+    &:hover {
+      box-shadow: 0 0 16px 4px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+    }
+  }
+
+  &PopUpMode {
+    display: none;
+  }
+
+  img {
+    object-fit: cover;
+    position: relative;;
+    width: 100%;
+    height: 100%;
+  }
+}
+
