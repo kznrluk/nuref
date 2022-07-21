@@ -1,0 +1,39 @@
+.editor {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #e8eaec;
+  box-shadow: 0 0 16px 4px rgba(0, 0, 0, 0.25);
+  max-height: 850px;
+  width: 650px;
+  padding: 15px;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cropWrapper {
+  padding: 8px;
+  background-color: #1d1f22;
+  overflow: auto;
+}
+
+.cropImgElm {
+  background: linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%), linear-gradient(45deg, #cccccc 25%, transparent 25%, transparent 75%, #cccccc 75%);
+  background-color: #FFFFFF;
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+}
+
+.editorOkButton {
+  margin-top: 16px;
+  border: 0;
+  color: #FAFAFA;
+  background-color: #1d1f22;
+  font-size: 16px;
+  width: 128px;
+  height: 40px;
+  border-radius: 100vh;
+}
