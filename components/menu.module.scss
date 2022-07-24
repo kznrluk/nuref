@@ -1,0 +1,55 @@
+.menu {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  width: auto;
+  height: 40px;
+
+  background-color: #e8eaec;
+  box-shadow: 0 0 16px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 3px;
+
+  color: #181a1f;
+  display: flex;
+  align-items: center;
+
+  padding: 0 12px;
+
+  a {
+    text-decoration: none;
+    font-family: Tahoma, Verdana, Segoe, sans-serif;
+    font-size: 18px;
+    font-weight: lighter;
+  }
+
+  hr {
+    border: none;
+    background-color: rgba(29, 31, 34, 0.3);
+    width: 1px;
+    height: 60%;
+    margin: 0 10px;
+  }
+
+  &Icons {
+    height: 100%;
+    display: flex;
+    align-items: center;
+
+    column-gap: 1px;
+
+    button, a {
+      border: 0;
+      border-radius: 3px;
+      margin: 0;
+      font-size: 24px;
+      padding: 6px 5px 1px;
+    }
+
+    button:hover, a:hover {
+      background-color: unset;
+      color: #63AAFA;
+      transition: 0.15s;
+      cursor: pointer;
+    }
+  }
+}

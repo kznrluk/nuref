@@ -3,27 +3,17 @@ import React, {useCallback, useEffect, useState} from "react";
 import {createImageRefFromUrl, ImageRef} from "../../libs/ref/image";
 import {deleteImageRef, imageRefDb} from "../../libs/db/imageRefDb";
 import Reference from "../../components/ref/reference";
-import {
-    BsColumns,
-    BsColumnsGap,
-    BsFolderPlus,
-    BsGithub,
-    BsShift,
-    BsShiftFill
-} from "react-icons/bs";
 import {useRouter} from "next/router";
-import CreatableSelect from "react-select/creatable";
 import Head from 'next/head';
 import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {useTranslation} from "react-i18next";
-import {FiThumbsDown, FiThumbsUp} from "react-icons/fi";
+import Menu from "../../components/menu";
 
 const WorkSpace: NextPage = () => {
     const [t, i18n] = useTranslation();
     const [imageList, setImageList] = useState<Array<ImageRef>>([])
     const [focusedUUID, setFocusedUUID] = useState<string | null>(null);
-    const [emojiIndex, setEmojiIndex] = useState<number>(0);
     const [isAltMode, setIsAltMode] = useState<boolean>(false);
     const [isImageViewMode, setIsImageViewMode] = useState<boolean>(false);
     const [lastImageDeleted, setLastImageDeleted] = useState<boolean>(false);
@@ -83,9 +73,9 @@ const WorkSpace: NextPage = () => {
     useEffect(() => {
         if (workSpaceID && workSpaceID !== 'main' && !imageList.some(i => i.workSpaces.includes(workSpaceID))) {
             if (lastImageDeleted) {
-                toast.warn(t('n_last_image_deleted', { workSpaceID }))
+                toast.warn(t('n_last_image_deleted', {workSpaceID}))
             } else {
-                toast.success(t('n_new_workspace', { workSpaceID }))
+                toast.success(t('n_new_workspace', {workSpaceID}))
             }
             setLastImageDeleted(false);
         }
@@ -95,20 +85,20 @@ const WorkSpace: NextPage = () => {
                 toast.error(t('warn_ios'), {autoClose: false})
             } else {
                 setTutorialStep(1);
-                toast(t('t_welcome_nuref'), { autoClose: false })
+                toast(t('t_welcome_nuref'), {autoClose: false})
             }
         }
         if (tutorialStep === 1 && imageList.length >= 1 && workSpaceID === 'main') {
             setTutorialStep(2);
-            toast(t('t_image_added'), { autoClose: false })
+            toast(t('t_image_added'), {autoClose: false})
         }
         if (tutorialStep === 2 && imageList.length >= 2 && workSpaceID === 'main') {
             setTutorialStep(3);
-            toast(t('t_workspace'), { autoClose: false })
+            toast(t('t_workspace'), {autoClose: false})
         }
         if (tutorialStep === 3 && workSpaceID !== 'main') {
             setTutorialStep(4);
-            setTimeout(() => toast(t('t_workspace_url'), { autoClose: false }), 500);
+            setTimeout(() => toast(t('t_workspace_url'), {autoClose: false}), 500);
         }
     }, [imageList])
 
@@ -302,163 +292,32 @@ const WorkSpace: NextPage = () => {
                 }}
             />
 
-            <div
-                style={{
-                    position: 'fixed',
-                    top: '12px',
-                    left: '12px',
-                    padding: '10px',
+            <Menu
+                isAltMode={isAltMode}
+                isImageViewMode={isImageViewMode}
+                workSpaceID={workSpaceID}
+                workSpaceList={availableWorkSpaceIDList}
 
-                    borderRadius: '3px',
-
-                    width: 'auto',
-                    height: '40px',
-                    backgroundColor: '#e8eaec',
-                    boxShadow: '0 0 16px 4px rgba(0, 0, 0, 0.25)',
-
-                    color: "#1d1f22",
-
-                    display: 'flex',
-                    alignItems: 'center',
+                onWorkSpaceIDChange={setWorkSpaceID}
+                onFileInputChange={() => document.getElementById('selectFiles')!.click()}
+                onAltModeButtonClick={() => setIsAltMode(!isAltMode)}
+                onImageViewButtonClick={() => {
+                    setIsImageViewMode(!isImageViewMode)
+                    setFocusedUUID('')
                 }}
-            >
-                <div>
-                    <p
-                        style={{
-                            fontSize: '16px',
-                            paddingRight: '8px',
-                        }}
-                    >NuRef {['🖼️', '🎨', '🧑‍🎨', '🖌️'][emojiIndex]}</p>
-                </div>
-                <div>
-                    {router.isReady ?
-                        <CreatableSelect
-                            styles={{
-                                control: (provided) => ({
-                                    ...provided,
-                                    height: '3px',
-                                    borderRadius: '3px',
-                                    borderWidth: 0,
-                                    minHeight: '30px',
-                                    width: '150px'
-                                }),
-                                valueContainer: (provided) => ({
-                                    ...provided,
-                                    padding: '0px 4px'
-                                }),
-                                indicatorsContainer: (provided) => ({
-                                    ...provided,
-                                    padding: '0px 0px'
-                                }),
-                                dropdownIndicator: (provided) => ({
-                                    ...provided,
-                                    padding: '0px 8px'
-                                })
-                            }}
-                            options={availableWorkSpaceIDList.map(e => ({value: e, label: e}))}
-                            value={{value: workSpaceID, label: workSpaceID}}
-                            isClearable={false}
-                            onChange={(option) => {
-                                const value = option!.value!;
-                                setWorkSpaceID(value);
-                            }}
-                        />
-                        :
-                        <p>loading</p>
-                    }
-
-                </div>
-                <div
-                    style={{
-                        fontSize: '24px',
-                        display: 'grid',
-                        placeItems: 'center',
-                        paddingLeft: '12px',
-                        cursor: 'pointer',
-                        paddingTop: '3px',
-                    }}
-                >
-                    <BsFolderPlus
-                        onClick={() => {
-                            document.getElementById('selectFiles')!.click();
-                        }}
-                    />
-                </div>
-                <div
-                    style={{
-                        fontSize: '24px',
-                        display: 'grid',
-                        placeItems: 'center',
-                        paddingLeft: '12px',
-                        cursor: 'pointer',
-                        paddingTop: '3px',
-                    }}
-                    onClick={() => setIsAltMode(!isAltMode)}
-                >
-                    {isAltMode ? <BsShiftFill/> : <BsShift/>}
-                </div>
-                <div
-                    style={{
-                        fontSize: '24px',
-                        display: 'grid',
-                        placeItems: 'center',
-                        paddingLeft: '12px',
-                        cursor: 'pointer',
-                        paddingTop: '3px',
-                    }}
-                    onClick={() => {
-                        setIsImageViewMode(!isImageViewMode)
-                        setFocusedUUID('')
-                    }}
-                >
-                    {isImageViewMode ? <BsColumns/> : <BsColumnsGap/>}
-                </div>
-                <div
-                    style={{
-                        fontSize: '24px',
-                        display: 'grid',
-                        placeItems: 'center',
-                        paddingLeft: '12px',
-                        paddingTop: '3px',
-                    }}
-                >
-                    <a href="https://github.com/kznrluk/nuref" target="_blank" rel="noreferrer"><BsGithub/></a>
-                </div>
-                <div
-                    style={{
-                        fontSize: '24px',
-                        display: 'grid',
-                        placeItems: 'center',
-                        paddingLeft: '12px',
-                        paddingTop: '3px',
-                    }}
-                >
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1uiiZmnnmolnUdvKJtj_QzXefgFbNLHd9GV1T-PUy_1f7kg/viewform?usp=sf_link" target="_blank" rel="noreferrer"><FiThumbsUp/></a>
-                </div>
-                <div
-                    style={{
-                        fontSize: '24px',
-                        display: 'grid',
-                        placeItems: 'center',
-                        paddingLeft: '6px',
-                        paddingTop: '3px',
-                    }}
-                >
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfkR0WpcpfoyyL-5Vt4aTpMPKYyN9AnhUAEm1pTTPqZ-syyDw/viewform?usp=sf_link" target="_blank" rel="noreferrer"><FiThumbsDown/></a>
-                </div>
-                <ToastContainer
-                    position="top-right"
-                    autoClose={5000}
-                    hideProgressBar={true}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    theme={"light"}
-                />
-            </div>
+            />
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={true}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme={"light"}
+            />
         </>
     )
 }
