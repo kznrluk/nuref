@@ -10,7 +10,7 @@ interface ControllerProps {
     onClickTrashButton: () => void;
 }
 
-function Controller(props: ControllerProps): ReactElement {
+const Controller = (props: ControllerProps): ReactElement => {
     return (
         <div className={styles.controller}>
             <button>
