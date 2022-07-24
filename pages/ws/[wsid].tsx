@@ -155,10 +155,6 @@ const WorkSpace: NextPage = () => {
         }
     }, [isAltMode, deleteFocusedImage])
 
-    useEffect(() => {
-        setEmojiIndex(Math.floor(Math.random() * 4));
-    }, [])
-
     const addImageFromFiles = useCallback((fileList: FileList) => {
         let added = false;
         // @ts-ignore
