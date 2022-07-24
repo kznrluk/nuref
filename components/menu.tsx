@@ -4,6 +4,7 @@ import {CSSObjectWithLabel, StylesConfig} from "react-select";
 import CreatableSelect from "react-select/creatable";
 import {BsColumns, BsColumnsGap, BsFolderPlus, BsGithub, BsShift, BsShiftFill} from "react-icons/bs";
 import {FiThumbsDown, FiThumbsUp} from "react-icons/fi";
+import Link from "next/link";
 
 const selectStyles: StylesConfig = {
     control: (provided: CSSObjectWithLabel) => ({
@@ -63,7 +64,7 @@ const Menu = (props: MenuProps): ReactElement => {
 
     return (
         <header className={styles.menu}>
-            <a href="/">NuRef </a>
+            <Link href="/">NuRef</Link>
             <hr/>
             <div>
                 <CreatableSelect
@@ -90,13 +91,13 @@ const Menu = (props: MenuProps): ReactElement => {
             </div>
             <hr />
             <div className={styles.menuIcons}>
-                <a href="https://github.com/kznrluk/nuref" target="_blank">
+                <a href="https://github.com/kznrluk/nuref" target="_blank" rel="noreferrer">
                     <BsGithub />
                 </a>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1uiiZmnnmolnUdvKJtj_QzXefgFbNLHd9GV1T-PUy_1f7kg/viewform?usp=sf_link" target="_blank">
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1uiiZmnnmolnUdvKJtj_QzXefgFbNLHd9GV1T-PUy_1f7kg/viewform?usp=sf_link" target="_blank" rel="noreferrer">
                     <FiThumbsUp />
                 </a>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfkR0WpcpfoyyL-5Vt4aTpMPKYyN9AnhUAEm1pTTPqZ-syyDw/viewform?usp=sf_link" target="_blank">
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfkR0WpcpfoyyL-5Vt4aTpMPKYyN9AnhUAEm1pTTPqZ-syyDw/viewform?usp=sf_link" target="_blank" rel="noreferrer">
                     <FiThumbsDown />
                 </a>
             </div>
