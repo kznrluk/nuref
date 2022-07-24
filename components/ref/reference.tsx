@@ -129,7 +129,7 @@ const Reference = (props: ReferenceProps): ReactElement => {
         </div>
     )
 
-    const editor = <Editor image={image} onEditEnd={() => { setIsEditMode(false); setIsUpdatingSize(true) }}></Editor>;
+    const editor = <Editor image={image} onEditEnd={() => { setIsEditMode(false); setIsUpdatingSize(true) }} />;
     const viewer = (
         <>
             {isIOS ? controller : "" /* QUICKFIX for iOS */}
@@ -166,8 +166,10 @@ const Reference = (props: ReferenceProps): ReactElement => {
                 }}
                 onRotateEnd={(event: OnRotateEnd) => {
                     const rotateEvent = event.lastEvent as OnRotate;
-                    const value = rotateEvent.rotate;
-                    updatePositionFromElement(event.target, isAltMode ? Math.round(value / 22.5) / (1 / 22.5) : value)
+                    if (rotateEvent) {
+                        const value = rotateEvent.rotate;
+                        updatePositionFromElement(event.target, isAltMode ? Math.round(value / 22.5) / (1 / 22.5) : value)
+                    }
                 }}
             />
         </>
