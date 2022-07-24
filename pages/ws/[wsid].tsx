@@ -21,7 +21,6 @@ import {FiThumbsDown, FiThumbsUp} from "react-icons/fi";
 
 const WorkSpace: NextPage = () => {
     const [t, i18n] = useTranslation();
-    const [lang, setLang] = useState('en');
     const [imageList, setImageList] = useState<Array<ImageRef>>([])
     const [focusedUUID, setFocusedUUID] = useState<string | null>(null);
     const [emojiIndex, setEmojiIndex] = useState<number>(0);
@@ -38,18 +37,12 @@ const WorkSpace: NextPage = () => {
         if (ua.indexOf("ipad") > -1 || (ua.indexOf("macintosh") > -1 && "ontouchend" in document) || /[ \(]ip/.test(ua)) {
             setIsIOS(true)
         }
-    }, [])
 
-    useEffect(() => {
         if (window) {
             const lang = window.navigator.language;
-            setLang(lang === 'ja' ? 'ja' : 'en');
+            i18n.changeLanguage(lang === 'ja' ? 'ja' : 'en')
         }
-    }, []);
-
-    useEffect(() => {
-        i18n.changeLanguage(lang)
-    }, [i18n, lang])
+    }, [])
 
     const router = useRouter();
     // MEMO: Next側でエスケープしてくれるのでXSSは大丈夫
@@ -246,7 +239,7 @@ const WorkSpace: NextPage = () => {
                     deleteImage(image.uuid)
                 }}
                 key={image.uuid}
-                opt={{isAltMode: isAltMode}}
+                isAltMode={isAltMode}
             />
         );
     })

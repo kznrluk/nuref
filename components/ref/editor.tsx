@@ -1,8 +1,8 @@
 import {ReactElement, useRef, useState} from "react";
 import styles from './editor.module.scss';
-import ReactCrop, {Crop, PixelCrop} from "react-image-crop";
+import ReactCrop, {PixelCrop} from "react-image-crop";
 import {ImageRef} from "../../libs/ref/image";
-import {createCanvas} from "../createCanvas";
+import {createCanvas} from "../../libs/createCanvas";
 
 interface EditorProps {
     image: ImageRef;
