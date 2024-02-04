@@ -4,7 +4,6 @@ const nextConfig = {
     swcMinify: false,
 
     head: {
-        title: 'NuRef',
         meta: [
             {charset: 'utf-8'},
             {name: 'viewport', content: 'width=device-width, initial-scale=1'},

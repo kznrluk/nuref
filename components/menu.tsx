@@ -68,6 +68,7 @@ const Menu = (props: MenuProps): ReactElement => {
             <hr/>
             <div>
                 <CreatableSelect
+                    instanceId={'workSpaceSelect'}
                     styles={selectStyles}
                     options={workSpaceOptions}
                     value={currentWorkSpaceIDSelect}

@@ -230,10 +230,11 @@ const WorkSpace: NextPage = () => {
         );
     })
 
+
     return (
         <>
             <Head>
-                <title>{workSpaceID} - NuRef</title>
+                <title>{workSpaceID ?? workSpaceID + " - NuRef"}</title>
             </Head>
             <div
                 contentEditable={!isIOS}

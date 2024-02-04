@@ -54,7 +54,7 @@ const Home: NextPage = () => {
                         paddingBottom: '25px',
                         fontSize: '32px',
                     }}>
-                        <Link href="/ws/">🖼️今すぐ試してみる！</Link>
+                        <Link href="/ws/main">🖼️今すぐ試してみる！</Link>
                     </div>
 
                     <div>
