@@ -71,13 +71,23 @@ const WorkSpace: NextPage = () => {
     }, [imageList, workSpaceID])
 
     useEffect(() => {
-        if (workSpaceID && workSpaceID !== 'main' && !imageList.some(i => i.workSpaces.includes(workSpaceID))) {
-            if (lastImageDeleted) {
-                toast.warn(t('n_last_image_deleted', {workSpaceID}))
-            } else {
-                toast.success(t('n_new_workspace', {workSpaceID}))
+        // Check if the workspace ID is valid and not 'main'
+        if (workSpaceID && workSpaceID !== 'main') {
+            // Check if the current imageList doesn't contain images for this workspace
+            const isWorkspaceEmptyInCurrentList = !imageList.some(i => i.workSpaces.includes(workSpaceID));
+
+            if (isWorkspaceEmptyInCurrentList) {
+                if (lastImageDeleted) {
+                    toast.warn(t('n_last_image_deleted', { workSpaceID }));
+                } else {
+                    // Check if the workspace ID is truly new (not in the list of all known workspace IDs)
+                    const isTrulyNewWorkspace = !availableWorkSpaceIDList.includes(workSpaceID);
+                    if (isTrulyNewWorkspace) {
+                        toast.success(t('n_new_workspace', { workSpaceID }));
+                    }
+                }
+                setLastImageDeleted(false);
             }
-            setLastImageDeleted(false);
         }
 
         if (router.isReady && imageList.length === 0 && workSpaceID === 'main' && !lastImageDeleted) {
@@ -100,7 +110,8 @@ const WorkSpace: NextPage = () => {
             setTutorialStep(4);
             setTimeout(() => toast(t('t_workspace_url'), {autoClose: false}), 500);
         }
-    }, [imageList, isIOS, lastImageDeleted, router.isReady, t, tutorialStep, workSpaceID])
+    // Add availableWorkSpaceIDList to dependencies
+    }, [imageList, isIOS, lastImageDeleted, router.isReady, t, tutorialStep, workSpaceID, availableWorkSpaceIDList]);
 
     const deleteFocusedImage = useCallback(() => {
         if (focusedUUID !== null) {
