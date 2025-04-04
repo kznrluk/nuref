@@ -18,6 +18,7 @@ export interface ReferenceProps {
     removeFocus: () => void
     removeMySelf: () => void
     focused: () => void
+    addImageFromFiles: (fileList: FileList) => void
 }
 
 const Reference = (props: ReferenceProps): ReactElement => {
@@ -114,6 +115,14 @@ const Reference = (props: ReferenceProps): ReactElement => {
                 width: props.isImageViewMode ? '20%' : referenceSize[0],
                 height: props.isImageViewMode ? 'unset' : referenceSize[1],
                 transform: `rotate(${image.position.rotate}deg)`,
+            }}
+            onDragOver={(e) => {
+                e.preventDefault();
+            }}
+            onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                props.addImageFromFiles(e.dataTransfer.files);
             }}
         >
             {/* eslint-disable-next-line @next/next/no-img-element */}

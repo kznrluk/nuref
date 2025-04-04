@@ -32,7 +32,7 @@ const WorkSpace: NextPage = () => {
             const lang = window.navigator.language;
             i18n.changeLanguage(lang === 'ja' ? 'ja' : 'en')
         }
-    }, [])
+    }, [i18n])
 
     const router = useRouter();
     // MEMO: Next側でエスケープしてくれるのでXSSは大丈夫
@@ -68,7 +68,7 @@ const WorkSpace: NextPage = () => {
 
         deleteImageRef(target);
         setImageList(imageList.filter(e => e.uuid !== target.uuid));
-    }, [imageList])
+    }, [imageList, workSpaceID])
 
     useEffect(() => {
         if (workSpaceID && workSpaceID !== 'main' && !imageList.some(i => i.workSpaces.includes(workSpaceID))) {
@@ -100,7 +100,7 @@ const WorkSpace: NextPage = () => {
             setTutorialStep(4);
             setTimeout(() => toast(t('t_workspace_url'), {autoClose: false}), 500);
         }
-    }, [imageList])
+    }, [imageList, isIOS, lastImageDeleted, router.isReady, t, tutorialStep, workSpaceID])
 
     const deleteFocusedImage = useCallback(() => {
         if (focusedUUID !== null) {
@@ -109,10 +109,13 @@ const WorkSpace: NextPage = () => {
     }, [focusedUUID, deleteImage]);
 
     useEffect(() => {
-        if (workSpaceID) {
-            router.replace('/ws/' + workSpaceID)
+        if (router.isReady && workSpaceID) {
+            const targetPath = '/ws/' + workSpaceID;
+            if (router.asPath !== targetPath) {
+                router.replace(targetPath)
+            }
         }
-    }, [workSpaceID])
+    }, [workSpaceID, router, router.isReady])
 
     useEffect(() => {
         if (!workSpaceID) return;
@@ -172,7 +175,7 @@ const WorkSpace: NextPage = () => {
                 toast.warn(t('warn_firefox_add_file'))
             }
         }
-    }, [addImage])
+    }, [addImage, t])
 
     const onPaste = useCallback((event: React.ClipboardEvent<HTMLDivElement>) => {
         // @ts-ignore
@@ -226,6 +229,7 @@ const WorkSpace: NextPage = () => {
                 }}
                 key={image.uuid}
                 isAltMode={isAltMode}
+                addImageFromFiles={addImageFromFiles}
             />
         );
     })

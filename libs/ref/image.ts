@@ -63,9 +63,48 @@ export class ImageRef {
     }
 }
 
-export const createImageRefFromUrl = async (src: string, workSpaceID: string) => {
-    const blob = await fetch(src).then(r => r.blob())
-    const imageRef = new ImageRef(blob, v4());
-    imageRef.workSpaces = [workSpaceID];
-    return imageRef;
+export const createImageRefFromUrl = (src: string, workSpaceID: string): Promise<ImageRef> => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const blob = await fetch(src).then(r => r.blob());
+            const imageRef = new ImageRef(blob, v4());
+            imageRef.workSpaces = [workSpaceID];
+
+            const tempUrl = URL.createObjectURL(blob);
+            const img = new Image();
+            img.onload = () => {
+                const naturalWidth = img.naturalWidth;
+                const naturalHeight = img.naturalHeight;
+
+                const MAX_SIZE = 500;
+                let initialWidth = naturalWidth;
+                let initialHeight = naturalHeight;
+
+                if (initialWidth > MAX_SIZE || initialHeight > MAX_SIZE) {
+                    const ratio = Math.min(MAX_SIZE / initialWidth, MAX_SIZE / initialHeight);
+                    initialWidth = Math.max(1, Math.round(initialWidth * ratio)); // 最小1px
+                    initialHeight = Math.max(1, Math.round(initialHeight * ratio)); // 最小1px
+                } else if (initialWidth <= 0 || initialHeight <= 0) {
+                    initialWidth = 250;
+                    initialHeight = 250;
+                }
+
+                imageRef.updatePosition(null, null, initialWidth, initialHeight, null);
+
+                URL.revokeObjectURL(tempUrl);
+                resolve(imageRef);
+            };
+            img.onerror = (err) => {
+                URL.revokeObjectURL(tempUrl);
+                console.error("Failed to load image dimensions:", err);
+                imageRef.updatePosition(null, null, 250, 250, null);
+                resolve(imageRef);
+            };
+            img.src = tempUrl;
+
+        } catch (error) {
+            console.error("Failed to create ImageRef:", error);
+            reject(error);
+        }
+    });
 }
