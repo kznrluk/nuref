@@ -21,6 +21,8 @@ const WorkSpace: NextPage = () => {
     const [workSpaceID, setWorkSpaceID] = useState<string | null>(null);
     const [availableWorkSpaceIDList, setAvailableWorkSpaceIDList] = useState<string[]>([]);
     const [isIOS, setIsIOS] = useState<boolean>(false);
+    const [tutorialCompleted, setTutorialCompleted] = useState<boolean>(false);
+    const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true);
 
     useEffect(() => {
         const ua = window.navigator.userAgent.toLowerCase();
@@ -39,8 +41,10 @@ const WorkSpace: NextPage = () => {
     const {wsid} = router.query;
     useEffect(() => {
         if (router.isReady) {
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-            setWorkSpaceID(!wsid || wsid.length === 0 ? 'main' : Array.isArray(wsid) ? wsid[0] : wsid)
+            const newWorkSpaceID = !wsid || wsid.length === 0 ? 'main' : Array.isArray(wsid) ? wsid[0] : wsid;
+            setWorkSpaceID(newWorkSpaceID);
+            // Reset initial load state when switching workspaces
+            setIsInitialLoad(true);
         }
     }, [router.isReady, wsid])
 
@@ -71,6 +75,9 @@ const WorkSpace: NextPage = () => {
     }, [imageList, workSpaceID])
 
     useEffect(() => {
+        // Only proceed if initial load is complete
+        if (isInitialLoad) return;
+
         // Check if the workspace ID is valid and not 'main'
         if (workSpaceID && workSpaceID !== 'main') {
             // Check if the current imageList doesn't contain images for this workspace
@@ -90,7 +97,8 @@ const WorkSpace: NextPage = () => {
             }
         }
 
-        if (router.isReady && imageList.length === 0 && workSpaceID === 'main' && !lastImageDeleted) {
+        // Only show tutorial for main workspace, when data is loaded, and tutorial hasn't been completed
+        if (router.isReady && imageList.length === 0 && workSpaceID === 'main' && !lastImageDeleted && !tutorialCompleted) {
             if (isIOS) {
                 toast.error(t('warn_ios'), {autoClose: false})
             } else {
@@ -108,10 +116,10 @@ const WorkSpace: NextPage = () => {
         }
         if (tutorialStep === 3 && workSpaceID !== 'main') {
             setTutorialStep(4);
+            setTutorialCompleted(true);
             setTimeout(() => toast(t('t_workspace_url'), {autoClose: false}), 500);
         }
-    // Add availableWorkSpaceIDList to dependencies
-    }, [imageList, isIOS, lastImageDeleted, router.isReady, t, tutorialStep, workSpaceID, availableWorkSpaceIDList]);
+    }, [imageList, isIOS, lastImageDeleted, router.isReady, t, tutorialStep, workSpaceID, availableWorkSpaceIDList, isInitialLoad, tutorialCompleted]);
 
     const deleteFocusedImage = useCallback(() => {
         if (focusedUUID !== null) {
@@ -144,6 +152,7 @@ const WorkSpace: NextPage = () => {
                 setImageList(result);
                 // @ts-ignore
                 setAvailableWorkSpaceIDList([...new Set(wsList)])
+                setIsInitialLoad(false);
             });
         } catch (e) {
             console.warn('failed to load items')
