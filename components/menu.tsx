@@ -2,7 +2,7 @@ import {MouseEventHandler, ReactElement} from "react";
 import styles from "./menu.module.scss";
 import {CSSObjectWithLabel, StylesConfig} from "react-select";
 import CreatableSelect from "react-select/creatable";
-import {BsColumns, BsColumnsGap, BsFolderPlus, BsGithub, BsShift, BsShiftFill} from "react-icons/bs";
+import {BsColumns, BsColumnsGap, BsFolderPlus, BsGithub, BsShift, BsShiftFill, BsTrash} from "react-icons/bs";
 import {FiThumbsDown, FiThumbsUp} from "react-icons/fi";
 import Link from "next/link";
 
@@ -49,6 +49,7 @@ interface MenuProps {
     onFileInputChange: MouseEventHandler<HTMLButtonElement>;
     onAltModeButtonClick: MouseEventHandler<HTMLButtonElement>;
     onImageViewButtonClick: MouseEventHandler<HTMLButtonElement>;
+    onDeleteAllClick: MouseEventHandler<HTMLButtonElement>;
 }
 
 const Menu = (props: MenuProps): ReactElement => {
@@ -88,6 +89,9 @@ const Menu = (props: MenuProps): ReactElement => {
                 </button>
                 <button onClick={props.onImageViewButtonClick}>
                     { props.isImageViewMode ? <BsColumns /> : <BsColumnsGap />}
+                </button>
+                <button onClick={props.onDeleteAllClick} style={{ color: '#dc3545' }}>
+                    <BsTrash />
                 </button>
             </div>
             <hr />

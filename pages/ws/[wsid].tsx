@@ -1,7 +1,7 @@
 import type {NextPage} from 'next'
 import React, {useCallback, useEffect, useState} from "react";
 import {createImageRefFromUrl, ImageRef} from "../../libs/ref/image";
-import {deleteImageRef, imageRefDb} from "../../libs/db/imageRefDb";
+import {deleteImageRef, imageRefDb, deleteAllImagesInWorkspace} from "../../libs/db/imageRefDb";
 import Reference from "../../components/ref/reference";
 import {useRouter} from "next/router";
 import Head from 'next/head';
@@ -234,6 +234,33 @@ const WorkSpace: NextPage = () => {
         }
     }, [imageList]);
 
+    const deleteAllImages = useCallback(async () => {
+        if (!workSpaceID) return;
+        
+        const currentWorkspaceImages = imageList.filter(i => i.workSpaces.includes(workSpaceID));
+        if (currentWorkspaceImages.length === 0) {
+            toast.warn('このワークスペースには削除する画像がありません。');
+            return;
+        }
+        
+        const confirmed = window.confirm(
+            `ワークスペース「${workSpaceID}」の全ての画像（${currentWorkspaceImages.length}枚）を削除しますか？\n\nこの操作は取り消せません。`
+        );
+        
+        if (confirmed) {
+            try {
+                const deletedCount = await deleteAllImagesInWorkspace(workSpaceID);
+                setImageList([]);
+                setFocusedUUID(null);
+                setLastImageDeleted(true);
+                toast.success(`${deletedCount}枚の画像を削除しました。`);
+            } catch (error) {
+                console.error('Failed to delete images:', error);
+                toast.error('画像の削除に失敗しました。');
+            }
+        }
+    }, [workSpaceID, imageList]);
+
     const imageElementList = imageList.map((image) => {
         return (
             <Reference
@@ -326,6 +353,7 @@ const WorkSpace: NextPage = () => {
                     setIsImageViewMode(!isImageViewMode)
                     setFocusedUUID('')
                 }}
+                onDeleteAllClick={deleteAllImages}
             />
             <ToastContainer
                 position="top-right"
